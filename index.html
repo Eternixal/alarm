@@ -18,8 +18,32 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
-        body { background: var(--bg); color: var(--text-main); height: 100vh; width: 100vw; overflow: hidden; touch-action: manipulation; }
+        body { background: var(--bg); color: var(--text-main); height: 100vh; width: 100vw; overflow: hidden; }
 
+        /* MODAL CONTAINER - TRY PRO */
+        #intro-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9999;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
+        }
+        #intro-modal {
+            background: #16161d; border: 1px solid var(--border); border-radius: 32px;
+            width: 100%; max-width: 360px; padding: 30px 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,1);
+            animation: modalSlide 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes modalSlide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .modal-header { text-align: center; margin-bottom: 25px; }
+        .modal-header h2 { font-size: 1.4rem; font-weight: 800; letter-spacing: -0.5px; }
+        .modal-header p { font-size: 0.6rem; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+
+        .feature-list { display: flex; flex-direction: column; gap: 14px; margin-bottom: 30px; }
+        .feature-row { display: flex; gap: 12px; align-items: center; }
+        .feat-icon { font-size: 0.9rem; width: 20px; text-align: center; }
+        .feat-txt { font-size: 0.75rem; color: #aaa; font-weight: 500; }
+        .feat-txt b { color: var(--blue); }
+
+        /* APP UI */
         .nav-bar {
             position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
             z-index: 1000; background: #0a0a0c; padding: 4px; border-radius: 20px; border: 1px solid var(--border); display: flex; gap: 4px;
@@ -56,63 +80,70 @@
         .btn-surrender { border-color: rgba(251, 113, 133, 0.2); color: var(--red); }
 
         .overlay { position: fixed; inset: 0; background: #000; z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; }
-        .ritual-msg { font-size: 0.6rem; letter-spacing: 4px; color: #444; margin-bottom: 10px; }
-        
         .free-active #logs-panel { opacity: 0.1; pointer-events: none; }
-        .flame-red { color: var(--red); }
-        .flame-blue { color: var(--blue); }
     </style>
 </head>
 <body class="free-active">
 
+    <div id="intro-overlay">
+        <div id="intro-modal">
+            <div class="modal-header">
+                <h2>AURA PRO</h2>
+                <p>Unlock Discipline</p>
+            </div>
+
+            <div class="feature-list">
+                <div class="feature-row"><span class="feat-icon">🔒</span><span class="feat-txt"><b>Monk Mode</b> Anti-distraksi ketat</span></div>
+                <div class="feature-row"><span class="feat-icon">🔥</span><span class="feat-txt"><b>Live Streak</b> & Aura Score™</span></div>
+                <div class="feature-row"><span class="feat-icon">🧘</span><span class="feat-txt"><b>Ritual</b> 3s Focus Preparation</span></div>
+                <div class="feature-row"><span class="feat-icon">🏳️</span><span class="feat-txt"><b>Surrender</b> Penalty system</span></div>
+                <div class="feature-row"><span class="feat-icon">📊</span><span class="feat-txt"><b>30D Log</b> Stateless di mode Free</span></div>
+            </div>
+
+            <button class="btn-main" style="background: var(--accent-pro); color: white; margin-bottom: 12px;" onclick="enterApp('pro')">START PRO RITUAL</button>
+            <button class="btn-sub" style="border: none; width: 100%;" onclick="enterApp('free')">Continue with Free</button>
+        </div>
+    </div>
+
     <nav class="nav-bar">
-        <button class="nav-btn active" onclick="setPlan('free', this)">FREE</button>
-        <button class="nav-btn" onclick="setPlan('pro', this)">PRO 💎</button>
+        <button class="nav-btn" id="nav-free" onclick="setPlan('free', this)">FREE</button>
+        <button class="nav-btn" id="nav-pro" onclick="setPlan('pro', this)">PRO 💎</button>
     </nav>
 
     <div id="ritual-overlay" class="overlay">
-        <p class="ritual-msg">STEADY YOUR BREATH</p>
+        <p style="font-size: 0.6rem; letter-spacing: 4px; color: #444; margin-bottom: 10px;">PREPARING YOUR AURA</p>
         <div id="ritual-count" style="font-family:'JetBrains Mono'; font-size:4rem;">3</div>
     </div>
 
     <div id="surrender-overlay" class="overlay">
-        <p style="color: var(--red); font-weight: 800; margin-bottom: 20px;">🏳️ SURRENDER</p>
+        <p style="color: var(--red); font-weight: 800; margin-bottom: 20px; letter-spacing: 2px;">🏳️ SURRENDER</p>
         <p style="font-size: 0.9rem; margin-bottom: 40px; line-height: 1.6; color: #888;">
             "Tidak apa-apa menyerah.<br>Tapi sistem akan mengingatnya."
         </p>
         <div style="display:flex; gap: 20px; width: 100%;">
-            <button class="btn-sub" onclick="cancelSurrender()" style="flex:1; border-color: white; color: white;">KEMBALI FOKUS</button>
-            <button class="btn-sub" onclick="confirmSurrender()" style="flex:1; background: var(--red); color: black; border: none;">YA, SAYA MENYERAH</button>
+            <button class="btn-sub" onclick="cancelSurrender()" style="flex:1; border-color: white; color: white;">BACK TO FOCUS</button>
+            <button class="btn-sub" onclick="confirmSurrender()" style="flex:1; background: var(--red); color: black; border: none;">I SURRENDER</button>
         </div>
     </div>
 
     <div class="app-shell">
         <div id="stats-card" class="card">
-            <div class="stat-row">
-                <span class="stat-label">AURA SCORE™</span>
-                <span id="score-val" class="stat-val">0.0</span>
-            </div>
-            <div class="stat-row">
-                <span class="stat-label">STREAK BADGE</span>
-                <span id="streak-val" class="stat-val">🔥 0</span>
-            </div>
+            <div class="stat-row"><span class="stat-label">AURA SCORE™</span><span id="score-val" class="stat-val">0.0</span></div>
+            <div class="stat-row"><span class="stat-label">STREAK BADGE</span><span id="streak-val" class="stat-val">🔥 0</span></div>
         </div>
 
         <main class="card">
             <div id="timer-display">00:00:00</div>
-            <input type="text" id="task-input" class="task-input" placeholder="Apa targetmu?">
-
+            <input type="text" id="task-input" class="task-input" placeholder="What's your mission?">
             <div class="time-picker" id="time-picker">
                 <div class="picker-group"><label>HR</label><input type="number" id="h" value="0"></div>
                 <div class="picker-group"><label>MIN</label><input type="number" id="m" value="0"></div>
                 <div class="picker-group"><label>SEC</label><input type="number" id="s" value="0"></div>
             </div>
-
-            <button class="btn-main" id="start-btn" onclick="initStart()">MULAI RITUAL</button>
-            
+            <button class="btn-main" id="start-btn" onclick="initStart()">START FOCUS</button>
             <div class="controls-secondary">
                 <button class="btn-sub" onclick="handlePause()" id="pause-btn">PAUSE</button>
-                <button class="btn-sub btn-surrender" id="surrender-btn" onclick="requestSurrender()">SURRENDER</button>
+                <button class="btn-sub btn-surrender" onclick="requestSurrender()">SURRENDER</button>
             </div>
         </main>
 
@@ -128,9 +159,10 @@
         let streak = parseInt(localStorage.getItem('aura_streak')) || 0;
         let interupsi = 0;
 
-        const timerDisplay = document.getElementById('timer-display');
-        const ritualOverlay = document.getElementById('ritual-overlay');
-        const surrenderOverlay = document.getElementById('surrender-overlay');
+        function enterApp(p) {
+            document.getElementById('intro-overlay').style.display = 'none';
+            setPlan(p, document.getElementById('nav-' + p));
+        }
 
         function setPlan(p, btn) {
             mode = p;
@@ -145,7 +177,7 @@
             const h = Math.floor(timeLeft / 3600).toString().padStart(2, '0');
             const m = Math.floor((timeLeft % 3600) / 60).toString().padStart(2, '0');
             const s = (timeLeft % 60).toString().padStart(2, '0');
-            timerDisplay.innerText = `${h}:${m}:${s}`;
+            document.getElementById('timer-display').innerText = `${h}:${m}:${s}`;
         }
 
         function initStart() {
@@ -156,13 +188,13 @@
             if(timeLeft <= 0) return;
 
             if(mode === 'pro') {
-                ritualOverlay.style.display = 'flex';
+                const ritual = document.getElementById('ritual-overlay');
+                ritual.style.display = 'flex';
                 let c = 3;
-                document.getElementById('ritual-count').innerText = c;
                 const intr = setInterval(() => {
                     c--;
                     if(c > 0) document.getElementById('ritual-count').innerText = c;
-                    else { clearInterval(intr); ritualOverlay.style.display = 'none'; startTimer(); }
+                    else { clearInterval(intr); ritual.style.display = 'none'; startTimer(); }
                 }, 1000);
             } else startTimer();
         }
@@ -172,6 +204,7 @@
             document.getElementById('start-btn').style.display = 'none';
             document.getElementById('time-picker').style.display = 'none';
             interupsi = 0;
+            if (mode === 'pro') { saveLog("IN PROGRESS ⏳"); updateStatsUI(); try { document.documentElement.requestFullscreen(); } catch(e){} }
             timer = setInterval(() => {
                 if(!isPaused && timeLeft > 0) { timeLeft--; updateUI(); }
                 else if (timeLeft <= 0) finishSession();
@@ -180,19 +213,15 @@
 
         function requestSurrender() {
             if (!timer) return;
-            if (mode === 'free') { confirmSurrender(); return; }
-            surrenderOverlay.style.display = 'flex';
+            if (mode === 'free') confirmSurrender();
+            else document.getElementById('surrender-overlay').style.display = 'flex';
         }
 
-        function cancelSurrender() { surrenderOverlay.style.display = 'none'; }
+        function cancelSurrender() { document.getElementById('surrender-overlay').style.display = 'none'; }
 
         function confirmSurrender() {
-            surrenderOverlay.style.display = 'none';
-            if (mode === 'pro') {
-                streak = 0;
-                localStorage.setItem('aura_streak', 0);
-                saveLog("SURRENDERED 🏳️");
-            }
+            document.getElementById('surrender-overlay').style.display = 'none';
+            if (mode === 'pro') { streak = 0; localStorage.setItem('aura_streak', 0); updateLastLog("SURRENDERED 🏳️"); if(document.fullscreenElement) document.exitFullscreen(); }
             resetToFresh();
         }
 
@@ -200,7 +229,18 @@
             if(mode === 'pro') interupsi += 1;
             isPaused = !isPaused;
             document.getElementById('pause-btn').innerText = isPaused ? "RESUME" : "PAUSE";
-            timerDisplay.style.opacity = isPaused ? "0.2" : (mode === 'pro' ? "0.3" : "1");
+            document.getElementById('timer-display').style.opacity = isPaused ? "0.2" : (mode === 'pro' ? "0.3" : "1");
+        }
+
+        function finishSession() {
+            clearInterval(timer);
+            if(mode === 'pro') {
+                let sScore = 1.5 - (interupsi * 0.3);
+                score = Math.max(0, score + sScore); streak++;
+                localStorage.setItem('aura_score', score); localStorage.setItem('aura_streak', streak);
+                updateLastLog("COMPLETED ✅"); if(document.fullscreenElement) document.exitFullscreen();
+            }
+            alert("Mission Accomplished."); resetToFresh();
         }
 
         function resetToFresh() {
@@ -208,23 +248,20 @@
             document.body.classList.remove('running');
             document.getElementById('start-btn').style.display = 'block';
             document.getElementById('time-picker').style.display = 'flex';
-            document.getElementById('pause-btn').innerText = "PAUSE";
-            timerDisplay.style.opacity = "1";
+            document.getElementById('timer-display').style.opacity = "1";
             updateUI(); updateStatsUI();
         }
 
-        function finishSession() {
-            clearInterval(timer);
-            if(mode === 'pro') {
-                let sessionScore = 1.5 - (interupsi * 0.3);
-                score = Math.max(0, score + sessionScore);
-                streak++;
-                localStorage.setItem('aura_score', score);
-                localStorage.setItem('aura_streak', streak);
-                saveLog("COMPLETED ✅");
-            }
-            alert("Fokus Selesai.");
-            resetToFresh();
+        function saveLog(status) {
+            const logs = JSON.parse(localStorage.getItem('aura_logs') || '[]');
+            logs.unshift({ t: document.getElementById('task-input').value || 'Deep Work', s: status, d: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
+            localStorage.setItem('aura_logs', JSON.stringify(logs.slice(0, 20)));
+        }
+
+        function updateLastLog(newStatus) {
+            const logs = JSON.parse(localStorage.getItem('aura_logs') || '[]');
+            if (logs.length > 0) { logs[0].s = newStatus; localStorage.setItem('aura_logs', JSON.stringify(logs)); }
+            renderLogs();
         }
 
         function updateStatsUI() {
@@ -235,12 +272,6 @@
             }
         }
 
-        function saveLog(status) {
-            const logs = JSON.parse(localStorage.getItem('aura_logs') || '[]');
-            logs.unshift({ t: document.getElementById('task-input').value || 'Focus', s: status, d: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
-            localStorage.setItem('aura_logs', JSON.stringify(logs.slice(0, 20)));
-        }
-
         function renderLogs() {
             const logs = JSON.parse(localStorage.getItem('aura_logs') || '[]');
             document.getElementById('log-content').innerHTML = logs.map(l => `
@@ -248,10 +279,8 @@
                     <span style="color:${l.s.includes('SURRENDER') ? 'var(--red)' : 'white'}">${l.t}</span>
                     <span style="color:var(--text-dim); font-size:0.6rem;">${l.s} | ${l.d}</span>
                 </div>
-            `).join('') || 'Log kosong.';
+            `).join('') || 'Log empty.';
         }
-
-        updateStatsUI();
     </script>
 </body>
 </html>
