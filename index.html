@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AURA | Smooth Focus</title>
+    <title>AURA | Discipline Engine</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@300;500&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #050507;
-            /* Optimasi: Ganti blur berat dengan solid transparan */
             --card-bg: #121216; 
             --border: rgba(255, 255, 255, 0.08);
             --accent-pro: linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%);
@@ -18,110 +17,50 @@
             --red: #fb7185;
         }
 
-        /* RESET & PERFORMANCE FIX */
-        * { 
-            margin: 0; padding: 0; box-sizing: border-box; 
-            font-family: 'Inter', sans-serif; 
-            -webkit-font-smoothing: antialiased;
-        }
-        
-        body { 
-            background: var(--bg); 
-            color: var(--text-main); height: 100vh; width: 100vw; 
-            overflow: hidden; touch-action: manipulation;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        body { background: var(--bg); color: var(--text-main); height: 100vh; width: 100vw; overflow: hidden; touch-action: manipulation; }
 
-        /* NAV - ULTRA LIGHT */
         .nav-bar {
             position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
-            z-index: 1000; background: #0a0a0c;
-            padding: 4px; border-radius: 20px; border: 1px solid var(--border);
-            display: flex; gap: 4px;
+            z-index: 1000; background: #0a0a0c; padding: 4px; border-radius: 20px; border: 1px solid var(--border); display: flex; gap: 4px;
         }
-        .nav-btn {
-            padding: 6px 16px; border-radius: 16px; border: none; color: var(--text-dim);
-            background: transparent; font-size: 0.7rem; font-weight: 700; cursor: pointer;
-        }
+        .nav-btn { padding: 6px 16px; border-radius: 16px; border: none; color: var(--text-dim); background: transparent; font-size: 0.7rem; font-weight: 700; cursor: pointer; }
         .nav-btn.active { background: white; color: black; }
         .pro-active .nav-btn.active { background: var(--accent-pro); color: white; }
 
-        .app-shell {
-            height: 100vh; overflow-y: auto; padding: 80px 16px 40px;
-            max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px;
-            will-change: transform; /* Persiapan untuk GPU */
-        }
+        .app-shell { height: 100vh; overflow-y: auto; padding: 80px 16px 40px; max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+        .card { width: 100%; background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px; padding: 20px; }
 
-        .card {
-            width: 100%; background: var(--card-bg); 
-            border: 1px solid var(--border); border-radius: 24px; padding: 20px;
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-
-        /* PRO UI HIDING LOGIC (Optimized) */
-        .pro-active.running .time-picker, 
-        .pro-active.running .controls-secondary { display: none; }
-
-        /* STATS PANEL */
-        #stats-card { transition: opacity 0.3s ease; }
+        #stats-card { transition: opacity 0.3s; }
         .free-active #stats-card { opacity: 0.1; pointer-events: none; filter: grayscale(1); }
         .stat-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
         .stat-label { font-size: 0.55rem; font-weight: 800; color: var(--text-dim); letter-spacing: 1.5px; }
         .stat-val { font-family: 'JetBrains Mono'; font-size: 0.85rem; }
 
-        /* TIMER AREA */
-        .timer-container { text-align: center; padding: 10px 0; }
-        #timer-display {
-            font-family: 'JetBrains Mono'; font-size: 3rem; font-weight: 300;
-            letter-spacing: -1px; margin-bottom: 10px;
-        }
+        #timer-display { font-family: 'JetBrains Mono'; font-size: 3rem; font-weight: 300; letter-spacing: -1px; text-align: center; padding: 10px 0; }
         .pro-active.running #timer-display { font-size: 2.2rem; opacity: 0.3; letter-spacing: 4px; }
 
-        /* INPUTS */
-        .task-input {
-            width: 100%; background: #1a1a20; border: 1px solid var(--border);
-            border-radius: 16px; padding: 14px; color: white; text-align: center;
-            font-size: 0.85rem; margin-bottom: 12px; outline: none;
-        }
+        .task-input { width: 100%; background: #1a1a20; border: 1px solid var(--border); border-radius: 16px; padding: 14px; color: white; text-align: center; font-size: 0.85rem; margin-bottom: 12px; outline: none; }
         .pro-active .task-input { border: none; border-bottom: 1px solid var(--border); border-radius: 0; background: transparent; }
 
         .time-picker { display: flex; gap: 8px; margin-bottom: 16px; }
-        .picker-group { flex: 1; }
-        .picker-group label { font-size: 0.5rem; color: var(--text-dim); display: block; text-align: center; margin-bottom: 4px; }
-        .picker-group input {
-            width: 100%; background: #1a1a20; border: 1px solid var(--border);
-            border-radius: 12px; padding: 10px 4px; color: white; text-align: center; font-family: 'JetBrains Mono';
-        }
+        .picker-group { flex: 1; text-align: center; }
+        .picker-group label { font-size: 0.5rem; color: var(--text-dim); display: block; margin-bottom: 4px; }
+        .picker-group input { width: 100%; background: #1a1a20; border: 1px solid var(--border); border-radius: 12px; padding: 10px 4px; color: white; text-align: center; font-family: 'JetBrains Mono'; }
 
-        /* BUTTONS */
-        .btn-main {
-            width: 100%; padding: 16px; border-radius: 18px; border: none;
-            font-size: 0.8rem; font-weight: 800; cursor: pointer;
-            background: white; color: black; transition: transform 0.1s;
-        }
-        .btn-main:active { transform: scale(0.98); }
+        .btn-main { width: 100%; padding: 16px; border-radius: 18px; border: none; font-size: 0.8rem; font-weight: 800; background: white; color: black; cursor: pointer; }
         .pro-active .btn-main { background: var(--accent-pro); color: white; }
 
         .controls-secondary { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
-        .btn-sub {
-            padding: 10px; border-radius: 12px; border: 1px solid var(--border);
-            background: transparent; color: var(--text-dim); font-size: 0.6rem;
-            font-weight: 700; cursor: pointer;
-        }
+        .btn-sub { padding: 10px; border-radius: 12px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-size: 0.6rem; font-weight: 700; cursor: pointer; }
+        .btn-surrender { border-color: rgba(251, 113, 133, 0.2); color: var(--red); }
 
-        /* ARCHIVE */
-        #logs-panel { transition: opacity 0.3s ease; }
+        .overlay { position: fixed; inset: 0; background: #000; z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; }
+        .ritual-msg { font-size: 0.6rem; letter-spacing: 4px; color: #444; margin-bottom: 10px; }
+        
         .free-active #logs-panel { opacity: 0.1; pointer-events: none; }
-
-        /* OVERLAYS */
-        .overlay {
-            position: fixed; inset: 0; background: #000; z-index: 5000;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-        }
-
-        /* FLAME COLORS */
-        .flame-blue { color: var(--blue); }
         .flame-red { color: var(--red); }
-        .flame-white { color: #fff; text-shadow: 0 0 8px #fff; }
+        .flame-blue { color: var(--blue); }
     </style>
 </head>
 <body class="free-active">
@@ -132,11 +71,22 @@
     </nav>
 
     <div id="ritual-overlay" class="overlay">
-        <p style="font-size: 0.6rem; letter-spacing: 4px; color: #444;">CALMING DOWN</p>
-        <div id="ritual-count" style="font-family:'JetBrains Mono'; font-size:4rem; font-weight:300;">3</div>
+        <p class="ritual-msg">STEADY YOUR BREATH</p>
+        <div id="ritual-count" style="font-family:'JetBrains Mono'; font-size:4rem;">3</div>
     </div>
 
-    <div class="app-shell" id="app-shell">
+    <div id="surrender-overlay" class="overlay">
+        <p style="color: var(--red); font-weight: 800; margin-bottom: 20px;">🏳️ SURRENDER</p>
+        <p style="font-size: 0.9rem; margin-bottom: 40px; line-height: 1.6; color: #888;">
+            "Tidak apa-apa menyerah.<br>Tapi sistem akan mengingatnya."
+        </p>
+        <div style="display:flex; gap: 20px; width: 100%;">
+            <button class="btn-sub" onclick="cancelSurrender()" style="flex:1; border-color: white; color: white;">KEMBALI FOKUS</button>
+            <button class="btn-sub" onclick="confirmSurrender()" style="flex:1; background: var(--red); color: black; border: none;">YA, SAYA MENYERAH</button>
+        </div>
+    </div>
+
+    <div class="app-shell">
         <div id="stats-card" class="card">
             <div class="stat-row">
                 <span class="stat-label">AURA SCORE™</span>
@@ -149,29 +99,26 @@
         </div>
 
         <main class="card">
-            <div class="timer-container">
-                <div id="timer-display">00:00:00</div>
-            </div>
+            <div id="timer-display">00:00:00</div>
+            <input type="text" id="task-input" class="task-input" placeholder="Apa targetmu?">
 
-            <input type="text" id="task-input" class="task-input" placeholder="Apa fokus utama?" spellcheck="false">
-
-            <div class="time-picker">
+            <div class="time-picker" id="time-picker">
                 <div class="picker-group"><label>HR</label><input type="number" id="h" value="0"></div>
                 <div class="picker-group"><label>MIN</label><input type="number" id="m" value="0"></div>
                 <div class="picker-group"><label>SEC</label><input type="number" id="s" value="0"></div>
             </div>
 
-            <button class="btn-main" id="start-btn" onclick="initStart()">START FOCUS</button>
+            <button class="btn-main" id="start-btn" onclick="initStart()">MULAI RITUAL</button>
             
             <div class="controls-secondary">
                 <button class="btn-sub" onclick="handlePause()" id="pause-btn">PAUSE</button>
-                <button class="btn-sub" id="reset-btn" onclick="handleReset()">RESET</button>
+                <button class="btn-sub btn-surrender" id="surrender-btn" onclick="requestSurrender()">SURRENDER</button>
             </div>
         </main>
 
         <div id="logs-panel" class="card">
-            <span class="stat-label">FOCUS HISTORY</span>
-            <div id="log-content" style="margin-top:12px; font-size:0.7rem;"></div>
+            <span class="stat-label">DISCIPLINE LOG</span>
+            <div id="log-content" style="margin-top:12px; font-size:0.75rem;"></div>
         </div>
     </div>
 
@@ -181,16 +128,16 @@
         let streak = parseInt(localStorage.getItem('aura_streak')) || 0;
         let interupsi = 0;
 
-        // Optimization: Use ID caching
         const timerDisplay = document.getElementById('timer-display');
-        const appShell = document.getElementById('app-shell');
+        const ritualOverlay = document.getElementById('ritual-overlay');
+        const surrenderOverlay = document.getElementById('surrender-overlay');
 
         function setPlan(p, btn) {
             mode = p;
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             document.body.className = p + '-active';
-            handleReset();
+            resetToFresh();
             updateStatsUI();
         }
 
@@ -208,63 +155,59 @@
             timeLeft = (h * 3600) + (m * 60) + s;
             if(timeLeft <= 0) return;
 
-            if(mode === 'pro') runRitual();
-            else startTimer();
-        }
-
-        function runRitual() {
-            const overlay = document.getElementById('ritual-overlay');
-            const count = document.getElementById('ritual-count');
-            overlay.style.display = 'flex';
-            let c = 3; count.innerText = c;
-            const intr = setInterval(() => {
-                c--;
-                if(c > 0) count.innerText = c;
-                else { clearInterval(intr); overlay.style.display = 'none'; startTimer(); }
-            }, 1000);
+            if(mode === 'pro') {
+                ritualOverlay.style.display = 'flex';
+                let c = 3;
+                document.getElementById('ritual-count').innerText = c;
+                const intr = setInterval(() => {
+                    c--;
+                    if(c > 0) document.getElementById('ritual-count').innerText = c;
+                    else { clearInterval(intr); ritualOverlay.style.display = 'none'; startTimer(); }
+                }, 1000);
+            } else startTimer();
         }
 
         function startTimer() {
             document.body.classList.add('running');
             document.getElementById('start-btn').style.display = 'none';
+            document.getElementById('time-picker').style.display = 'none';
             interupsi = 0;
-            if(mode === 'pro') try { document.documentElement.requestFullscreen(); } catch(e){}
-
             timer = setInterval(() => {
-                if(!isPaused && timeLeft > 0) {
-                    timeLeft--;
-                    updateUI();
-                } else if (timeLeft <= 0) finishSession();
+                if(!isPaused && timeLeft > 0) { timeLeft--; updateUI(); }
+                else if (timeLeft <= 0) finishSession();
             }, 1000);
         }
 
-        window.onblur = () => {
-            if(mode === 'pro' && timer) {
-                interupsi++;
-                timeLeft += 10;
-                alert("DISTRACTION DETECTED: +10s Penalty.");
+        function requestSurrender() {
+            if (!timer) return;
+            if (mode === 'free') { confirmSurrender(); return; }
+            surrenderOverlay.style.display = 'flex';
+        }
+
+        function cancelSurrender() { surrenderOverlay.style.display = 'none'; }
+
+        function confirmSurrender() {
+            surrenderOverlay.style.display = 'none';
+            if (mode === 'pro') {
+                streak = 0;
+                localStorage.setItem('aura_streak', 0);
+                saveLog("SURRENDERED 🏳️");
             }
-        };
+            resetToFresh();
+        }
 
         function handlePause() {
-            if(mode === 'pro') {
-                if(!confirm("Pro Rule: Score will decrease. Pause?")) return;
-                interupsi += 2;
-            }
+            if(mode === 'pro') interupsi += 1;
             isPaused = !isPaused;
             document.getElementById('pause-btn').innerText = isPaused ? "RESUME" : "PAUSE";
             timerDisplay.style.opacity = isPaused ? "0.2" : (mode === 'pro' ? "0.3" : "1");
         }
 
-        function handleReset() {
-            if(mode === 'pro' && timer) {
-                if(confirm("Pro Session will FAIL. Reset?")) {
-                    streak = 0; localStorage.setItem('aura_streak', 0);
-                } else return;
-            }
+        function resetToFresh() {
             clearInterval(timer); timer = null; isPaused = false;
             document.body.classList.remove('running');
             document.getElementById('start-btn').style.display = 'block';
+            document.getElementById('time-picker').style.display = 'flex';
             document.getElementById('pause-btn').innerText = "PAUSE";
             timerDisplay.style.opacity = "1";
             updateUI(); updateStatsUI();
@@ -273,41 +216,39 @@
         function finishSession() {
             clearInterval(timer);
             if(mode === 'pro') {
-                let sessionScore = 1.5 - (interupsi * 0.2);
+                let sessionScore = 1.5 - (interupsi * 0.3);
                 score = Math.max(0, score + sessionScore);
                 streak++;
                 localStorage.setItem('aura_score', score);
                 localStorage.setItem('aura_streak', streak);
-                saveLog();
+                saveLog("COMPLETED ✅");
             }
-            new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg').play().catch(()=>{});
-            alert("Session Completed.");
-            handleReset();
+            alert("Fokus Selesai.");
+            resetToFresh();
         }
 
         function updateStatsUI() {
             if(mode === 'pro') {
                 document.getElementById('score-val').innerText = score.toFixed(1);
-                const sv = document.getElementById('streak-val');
-                sv.innerText = `🔥 ${streak}`;
-                sv.className = 'stat-val ' + (streak > 5 ? (streak > 15 ? 'flame-white' : 'flame-red') : 'flame-blue');
+                document.getElementById('streak-val').innerText = `🔥 ${streak}`;
                 renderLogs();
             }
         }
 
-        function saveLog() {
+        function saveLog(status) {
             const logs = JSON.parse(localStorage.getItem('aura_logs') || '[]');
-            logs.unshift({ t: document.getElementById('task-input').value || 'Deep Work', d: new Date().toLocaleDateString('id-ID') });
-            localStorage.setItem('aura_logs', JSON.stringify(logs.slice(0, 30)));
+            logs.unshift({ t: document.getElementById('task-input').value || 'Focus', s: status, d: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
+            localStorage.setItem('aura_logs', JSON.stringify(logs.slice(0, 20)));
         }
 
         function renderLogs() {
             const logs = JSON.parse(localStorage.getItem('aura_logs') || '[]');
             document.getElementById('log-content').innerHTML = logs.map(l => `
-                <div style="display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--border)">
-                    <span>${l.t}</span><span style="color:var(--text-dim)">${l.d}</span>
+                <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border)">
+                    <span style="color:${l.s.includes('SURRENDER') ? 'var(--red)' : 'white'}">${l.t}</span>
+                    <span style="color:var(--text-dim); font-size:0.6rem;">${l.s} | ${l.d}</span>
                 </div>
-            `).join('') || 'No history.';
+            `).join('') || 'Log kosong.';
         }
 
         updateStatsUI();
