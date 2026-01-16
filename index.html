@@ -19,6 +19,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; touch-action: manipulation; }
         body { background: var(--bg); color: var(--text-main); height: 100vh; width: 100vw; overflow: hidden; }
 
+        /* FONT PRO */
         .pro-active .card, .pro-active .nav-btn.active, .pro-active .btn-main { font-family: 'JetBrains Mono', monospace !important; }
 
         /* NAV & SHELL */
@@ -30,41 +31,31 @@
         .card { width: 100%; background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px; padding: 24px; position: relative; overflow: hidden; }
         .free-active .pro-feature { opacity: 0.15; pointer-events: none; filter: blur(3px); }
 
-        /* SWIPE TIMER DESIGN */
-        .timer-container { 
-            padding: 40px 0; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            cursor: ns-resize; /* Cursor icon untuk indikasi swipe */
-            user-select: none;
-        }
-        #timer-display { 
-            font-family: 'JetBrains Mono'; 
-            font-size: 4.5rem; 
-            font-weight: 400; 
-            letter-spacing: -3px; 
-            color: var(--text-main); 
-            transition: transform 0.1s ease;
-        }
-        .swipe-hint { font-size: 0.55rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; margin-bottom: -10px; }
+        /* TIMER SCROLLER */
+        .timer-scroller { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 30px 0; user-select: none; }
+        .unit-box { position: relative; height: 120px; width: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: ns-resize; }
+        .digit { font-family: 'JetBrains Mono'; font-size: 3.2rem; font-weight: 400; color: var(--text-main); z-index: 2; }
+        .ghost { position: absolute; font-family: 'JetBrains Mono'; font-size: 1.8rem; color: var(--text-dim); opacity: 0.2; }
+        .ghost-up { top: 0; } .ghost-down { bottom: 0; }
+        .separator { font-size: 2rem; color: var(--text-dim); padding-bottom: 10px; }
+        .unit-label { font-size: 0.5rem; color: var(--text-dim); position: absolute; bottom: -10px; font-weight: 800; letter-spacing: 1px; }
 
         .btn-main { width: 100%; padding: 18px; border-radius: 20px; border: none; font-size: 0.85rem; font-weight: 800; background: var(--text-main); color: var(--bg); cursor: pointer; }
-        
-        /* STATUS TAGS */
-        .status-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-        .status-tag { font-size: 0.65rem; font-weight: 700; padding: 4px 12px; border-radius: 8px; background: var(--border); color: var(--text-dim); }
-        .tag-on { background: rgba(74, 222, 128, 0.15); color: var(--green); }
-        .tag-off { background: rgba(251, 113, 133, 0.15); color: var(--red); }
-        .tag-broken { background: #4c1d1d; color: #f87171; }
 
-        /* OVERLAYS */
-        #finish-notice { position: absolute; inset: 0; background: var(--card-bg); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10; }
+        /* PAYWALL TRANSITION */
+        .overlay { position: fixed; inset: 0; background: rgba(31, 35, 40, 0.95); z-index: 5000; display: none; align-items: center; justify-content: center; padding: 25px; backdrop-filter: blur(8px); opacity: 0; transition: opacity 0.3s ease; }
+        .overlay.show { display: flex; opacity: 1; }
+        .modal-content { background: var(--card-bg); border: 1px solid var(--border); border-radius: 32px; padding: 30px; width: 100%; max-width: 360px; text-align: center; transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .overlay.show .modal-content { transform: scale(1); }
+
+        /* PRO INFO - SIMPLE LANGUAGE */
+        .pro-perks { text-align: left; margin: 20px 0; display: flex; flex-direction: column; gap: 16px; }
+        .perk-item { display: flex; gap: 12px; align-items: center; }
+        .perk-item b { display: block; font-size: 0.8rem; color: var(--text-main); }
+        .perk-item p { font-size: 0.65rem; color: var(--text-dim); }
+
         #delay-overlay { position: fixed; inset: 0; background: rgba(31,35,40,0.98); z-index: 9000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; }
-        .overlay { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 25px; }
-        #intro-overlay { display: flex; background: rgba(31, 35, 40, 0.98); backdrop-filter: blur(15px); }
-        #intro-modal { background: var(--card-bg); border: 1px solid var(--border); border-radius: 32px; padding: 35px 25px; width: 100%; max-width: 350px; text-align: center; }
-        .btn-sub { width: 100%; padding: 12px; border-radius: 15px; border: 1px solid var(--border); background: transparent; color: var(--text-dim); font-size: 0.7rem; font-weight: 700; margin-top: 10px; cursor: pointer; }
+        #finish-notice { position: absolute; inset: 0; background: var(--card-bg); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10; }
     </style>
 </head>
 <body class="free-active">
@@ -72,20 +63,39 @@
     <div id="lofi-player" style="position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none;"></div>
 
     <div id="intro-overlay" class="overlay">
-        <div id="intro-modal">
-            <h2 style="font-size: 1.3rem; font-weight: 800;">Upgrade to Productivity</h2>
-            <div style="font-size: 0.7rem; color: var(--text-dim); margin-top: 4px;">Aktifkan kontrol fokus penuh.</div>
-            <button class="btn-main" onclick="buyPro()" style="background: white; color: black; margin-top: 20px;">DAPATKAN AKSES — Rp 15.000</button>
-            <button class="btn-sub" onclick="startTrial()">COBA DULU (30 MENIT)</button>
-            <button class="btn-sub" style="border:none; opacity: 0.6;" onclick="enterApp('free')">Nanti saja</button>
+        <div class="modal-content">
+            <h2 style="font-size: 1.3rem; font-weight: 800;">Bikin Fokus Jadi Nyata</h2>
+            <p style="font-size: 0.7rem; color: var(--text-dim); margin-top: 5px;">Dapatkan alat pendukung komitmen lo.</p>
+            
+            <div class="pro-perks">
+                <div class="perk-item">
+                    <span>🎵</span>
+                    <div><b>Musik Fokus Otomatis</b><p>Gak perlu ribet cari lagu, musik jalan bareng timer.</p></div>
+                </div>
+                <div class="perk-item">
+                    <span>⌛</span>
+                    <div><b>Jeda Anti-Nyerah</b><p>Ada waktu 3 detik buat mikir lagi pas lo mau nyerah.</p></div>
+                </div>
+                <div class="perk-item">
+                    <span>🗓️</span>
+                    <div><b>Pantau Komitmen</b><p>Sistem bakal tau kalau lo absen fokus seharian.</p></div>
+                </div>
+                <div class="perk-item">
+                    <span>✨</span>
+                    <div><b>Tampilan Eksklusif</b><p>Tampilan lebih keren dan kata-kata penyemangat tiap hari.</p></div>
+                </div>
+            </div>
+
+            <button class="btn-main" onclick="buyPro()" style="background: white; color: black;">DAPATKAN AKSES — Rp 15.000</button>
+            <button onclick="closePaywall()" style="background:none; border:none; color:var(--text-dim); margin-top:15px; font-size:0.7rem; font-weight: 600; cursor:pointer;">Mungkin nanti</button>
         </div>
     </div>
 
     <div id="delay-overlay">
         <div id="delay-timer" style="font-size: 2rem; margin-bottom: 20px; font-family: 'JetBrains Mono';">3</div>
-        <p style="font-size: 0.8rem; margin-bottom: 30px;">Tahan fokus lo sebentar lagi...</p>
-        <button class="btn-main" onclick="cancelStop()">Lanjut</button>
-        <button class="btn-sub" id="confirm-stop-btn" style="opacity: 0; pointer-events: none;" onclick="finalStop()">Gue nyerah</button>
+        <p style="font-size: 0.8rem; margin-bottom: 30px;">Tarik napas... yakin mau berhenti sekarang?</p>
+        <button class="btn-main" onclick="cancelStop()">Lanjut Fokus</button>
+        <button id="confirm-stop-btn" style="opacity: 0; pointer-events: none; color: var(--red); background:none; border:none; margin-top:20px; font-weight:700; font-size:0.7rem;" onclick="finalStop()">Iya, saya nyerah</button>
     </div>
 
     <nav class="nav-bar">
@@ -95,142 +105,138 @@
 
     <div class="app-shell">
         <div class="card pro-feature">
-            <div class="status-row">
-                <span style="font-size: 0.55rem; font-weight: 800; color: var(--text-dim); letter-spacing: 1.2px;">INTEGRITAS</span>
-                <span id="day-status" class="status-tag">REHAT</span>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size: 0.55rem; font-weight: 800; color: var(--text-dim); letter-spacing: 1.2px;">KOMITMEN HARI INI</span>
+                <span id="day-status" style="font-size:0.6rem; padding:4px 10px; border-radius:8px; background:var(--border);">REHAT</span>
             </div>
-            <div id="integrity-info" style="font-size: 0.65rem; color: var(--text-dim); margin-top: 4px;">Sistem standby.</div>
+            <div id="integrity-info" style="font-size: 0.65rem; color: var(--text-dim); margin-top: 4px;">Belum ada sesi hari ini.</div>
         </div>
 
         <main class="card">
             <div id="finish-notice">
                 <b style="font-size: 0.9rem;">Sesi Selesai ✨</b>
-                <button class="btn-sub" onclick="closeFinishNotice()" style="width: auto; padding: 8px 25px; margin-top: 15px;">Tutup</button>
+                <button class="btn-main" onclick="closeFinishNotice()" style="width: auto; padding: 10px 30px; margin-top: 15px;">Mulai Lagi</button>
             </div>
 
-            <div id="start-assist" class="pro-feature" style="text-align: center;">"Mulai aja dulu."</div>
+            <div id="start-assist" class="pro-feature" style="text-align: center; font-size:0.7rem; color:var(--text-dim);">"Mulai aja dulu, nggak perlu sempurna."</div>
 
-            <div class="timer-container" id="timer-area">
-                <span class="swipe-hint" id="swipe-hint">Swipe Up/Down</span>
-                <div id="timer-display">00:25:00</div>
+            <div class="timer-scroller">
+                <div class="unit-box" onwheel="handleWheel(event, 'h')" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event, 'h')">
+                    <span class="ghost ghost-up" id="h-up">01</span>
+                    <span class="digit" id="h-val">00</span>
+                    <span class="ghost ghost-down" id="h-down">23</span>
+                    <span class="unit-label">JAM</span>
+                </div>
+                <span class="separator">:</span>
+                <div class="unit-box" onwheel="handleWheel(event, 'm')" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event, 'm')">
+                    <span class="ghost ghost-up" id="m-up">01</span>
+                    <span class="digit" id="m-val">00</span>
+                    <span class="ghost ghost-down" id="m-down">59</span>
+                    <span class="unit-label">MENIT</span>
+                </div>
+                <span class="separator">:</span>
+                <div class="unit-box" onwheel="handleWheel(event, 's')" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event, 's')">
+                    <span class="ghost ghost-up" id="s-up">01</span>
+                    <span class="digit" id="s-val">00</span>
+                    <span class="ghost ghost-down" id="s-down">59</span>
+                    <span class="unit-label">DETIK</span>
+                </div>
             </div>
 
-            <div class="pro-feature" style="font-size: 0.6rem; color: var(--green); text-align: center; margin-bottom: 15px; font-weight: 700;">
-                DEEP FOCUS AUDIO ACTIVE
+            <div class="pro-feature" style="font-size: 0.55rem; color: var(--green); text-align: center; margin-bottom: 15px; font-weight: 700;">
+                MUSIK FOKUS AKTIF
             </div>
 
             <button class="btn-main" id="start-btn" onclick="initStart()">MULAI SEKARANG</button>
             
             <div id="running-controls" style="display: none; margin-top: 10px;">
-                <button class="btn-sub" style="width: 100%; border-color: var(--border);" onclick="handleStop()">Berhenti</button>
+                <button onclick="handleStop()" style="width:100%; background:none; border:1px solid var(--border); color:var(--text-dim); padding:15px; border-radius:20px; font-weight:700; font-size:0.7rem; cursor:pointer;">Berhenti Awal</button>
             </div>
         </main>
     </div>
 
     <script>
-        let timeLeft = 1500, timer = null, mode = 'free', player;
-        let startY = 0, isRunning = false;
+        // Start all units at 0
+        let h = 0, m = 0, s = 0;
+        let timer = null, mode = 'free', player, isRunning = false, startY = 0;
 
-        // --- SWIPE LOGIC ---
-        const timerArea = document.getElementById('timer-area');
-        
-        timerArea.addEventListener('touchstart', e => { if(!isRunning) startY = e.touches[0].clientY; });
-        timerArea.addEventListener('touchmove', e => {
-            if(isRunning) return;
-            const currentY = e.touches[0].clientY;
-            const diff = startY - currentY;
-
-            if (Math.abs(diff) > 10) { // Sensitivitas swipe
-                if (diff > 0) timeLeft += 60; // Swipe Up: +1 Menit
-                else if (timeLeft >= 60) timeLeft -= 60; // Swipe Down: -1 Menit
-                
-                startY = currentY;
-                updateUI();
-            }
-        });
-
-        // Fallback untuk mouse/desktop
-        timerArea.addEventListener('wheel', e => {
-            if(isRunning) return;
-            if (e.deltaY < 0) timeLeft += 60;
-            else if (timeLeft >= 60) timeLeft -= 60;
-            updateUI();
-        });
-
-        function updateUI() {
-            const h = Math.floor(timeLeft / 3600).toString().padStart(2, '0');
-            const m = Math.floor((timeLeft % 3600) / 60).toString().padStart(2, '0');
-            const s = (timeLeft % 60).toString().padStart(2, '0');
-            document.getElementById('timer-display').innerText = `${h}:${m}:${s}`;
+        function requestProAccess() {
+            const overlay = document.getElementById('intro-overlay');
+            overlay.style.display = 'flex';
+            setTimeout(() => overlay.classList.add('show'), 10);
         }
 
-        // --- CORE LOGIC ---
-        function initStart() {
-            if(timeLeft <= 0) return;
-            isRunning = true;
-            document.getElementById('start-btn').style.display = 'none';
-            document.getElementById('swipe-hint').style.display = 'none';
-            document.getElementById('running-controls').style.display = 'block';
-            if(mode === 'pro') { 
-                updateDayStatus('ON'); 
-                document.getElementById('integrity-info').innerText = "Fokus sedang terjaga.";
-                if(player) player.playVideo();
-            }
-            timer = setInterval(() => {
-                if(timeLeft > 0) { timeLeft--; updateUI(); }
-                else finishSession();
-            }, 1000);
+        function closePaywall() {
+            const overlay = document.getElementById('intro-overlay');
+            overlay.classList.remove('show');
+            setTimeout(() => overlay.style.display = 'none', 300);
         }
 
-        function finishSession() {
-            clearInterval(timer); isRunning = false;
-            if(mode === 'pro') {
-                localStorage.setItem('lastFocusDate', new Date().toDateString());
-                if(player) player.pauseVideo();
-            }
-            document.getElementById('finish-notice').style.display = 'flex';
-        }
-
-        function closeFinishNotice() {
-            document.getElementById('finish-notice').style.display = 'none';
-            resetUI();
-        }
-
-        function resetUI() {
-            clearInterval(timer); isRunning = false;
-            document.getElementById('start-btn').style.display = 'block';
-            document.getElementById('swipe-hint').style.display = 'block';
-            document.getElementById('running-controls').style.display = 'none';
-            timeLeft = 1500; // Reset ke 25 menit
-            updateUI();
-        }
-
-        // --- UI & PLAN HELPERS ---
+        function buyPro() { closePaywall(); setPlan('pro', document.getElementById('nav-pro')); }
         function setPlan(p, btn) {
             mode = p;
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             document.body.className = p + '-active';
-            checkIntegrity();
         }
 
-        function updateDayStatus(state) {
-            const el = document.getElementById('day-status');
-            el.innerText = state;
-            el.className = 'status-tag tag-' + state.toLowerCase();
+        function handleWheel(e, unit) { if(!isRunning) changeValue(unit, e.deltaY < 0 ? 1 : -1); }
+        function handleTouchStart(e) { if(!isRunning) startY = e.touches[0].clientY; }
+        function handleTouchMove(e, unit) {
+            if(isRunning) return;
+            const currentY = e.touches[0].clientY;
+            const diff = startY - currentY;
+            if (Math.abs(diff) > 25) { changeValue(unit, diff > 0 ? 1 : -1); startY = currentY; }
+        }
+        function changeValue(unit, delta) {
+            if(unit === 'h') h = (h + delta + 24) % 24;
+            if(unit === 'm') m = (m + delta + 60) % 60;
+            if(unit === 's') s = (s + delta + 60) % 60;
+            updateDisplay();
+        }
+        function updateDisplay() {
+            document.getElementById('h-val').innerText = h.toString().padStart(2, '0');
+            document.getElementById('m-val').innerText = m.toString().padStart(2, '0');
+            document.getElementById('s-val').innerText = s.toString().padStart(2, '0');
+            document.getElementById('h-up').innerText = ((h + 1) % 24).toString().padStart(2, '0');
+            document.getElementById('h-down').innerText = ((h - 1 + 24) % 24).toString().padStart(2, '0');
+            document.getElementById('m-up').innerText = ((m + 1) % 60).toString().padStart(2, '0');
+            document.getElementById('m-down').innerText = ((m - 1 + 60) % 60).toString().padStart(2, '0');
+            document.getElementById('s-up').innerText = ((s + 1) % 60).toString().padStart(2, '0');
+            document.getElementById('s-down').innerText = ((s - 1 + 60) % 60).toString().padStart(2, '0');
         }
 
-        function checkIntegrity() {
-            const lastDate = localStorage.getItem('lastFocusDate');
-            if (!lastDate) return;
-            const diff = (new Date(new Date().toDateString()) - new Date(lastDate)) / (1000 * 60 * 60 * 24);
-            if (diff >= 1) {
-                updateDayStatus('BROKEN');
-                document.getElementById('integrity-info').innerText = "Integritas terputus kemarin.";
-            }
+        function initStart() {
+            let totalSec = (h * 3600) + (m * 60) + s;
+            if(totalSec <= 0) return;
+            isRunning = true;
+            document.getElementById('start-btn').style.display = 'none';
+            document.getElementById('running-controls').style.display = 'block';
+            document.querySelectorAll('.ghost').forEach(g => g.style.display = 'none');
+            if(mode === 'pro') { if(player) player.playVideo(); }
+            timer = setInterval(() => {
+                if(totalSec > 0) {
+                    totalSec--; h = Math.floor(totalSec / 3600); m = Math.floor((totalSec % 3600) / 60); s = totalSec % 60; updateDisplay();
+                } else { finishSession(); }
+            }, 1000);
         }
 
-        // --- YOUTUBE & STOP LOGIC (Sama seperti sebelumnya) ---
+        function handleStop() {
+            if(mode === 'free') { finalStop(); return; }
+            document.getElementById('delay-overlay').style.display = 'flex';
+            setTimeout(() => { 
+                document.getElementById('confirm-stop-btn').style.opacity = "1";
+                document.getElementById('confirm-stop-btn').style.pointerEvents = "auto";
+            }, 3000);
+        }
+
+        function finalStop() { if(player) player.pauseVideo(); clearInterval(timer); document.getElementById('delay-overlay').style.display = 'none'; resetUI(); }
+        function finishSession() { if(player) player.pauseVideo(); clearInterval(timer); isRunning = false; document.getElementById('finish-notice').style.display = 'flex'; }
+        function closeFinishNotice() { document.getElementById('finish-notice').style.display = 'none'; resetUI(); }
+        function cancelStop() { document.getElementById('delay-overlay').style.display = 'none'; }
+        function resetUI() { isRunning = false; h = 0; m = 0; s = 0; document.getElementById('start-btn').style.display = 'block'; document.getElementById('running-controls').style.display = 'none'; document.querySelectorAll('.ghost').forEach(g => g.style.display = 'block'); updateDisplay(); }
+
+        // YT API
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -241,21 +247,7 @@
                 playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': 'oPVte6aMprI' }
             });
         }
-        function requestProAccess() { if(mode==='free') document.getElementById('intro-overlay').style.display = 'flex'; }
-        function buyPro() { document.getElementById('intro-overlay').style.display = 'none'; setPlan('pro', document.getElementById('nav-pro')); }
-        function startTrial() { buyPro(); setTimeout(() => setPlan('free', document.getElementById('nav-free')), 1800000); }
-        function cancelStop() { document.getElementById('delay-overlay').style.display = 'none'; }
-        function handleStop() { 
-            if(mode==='free') { resetUI(); return; }
-            document.getElementById('delay-overlay').style.display = 'flex';
-            setTimeout(() => { 
-                document.getElementById('confirm-stop-btn').style.opacity = "1";
-                document.getElementById('confirm-stop-btn').style.pointerEvents = "auto";
-            }, 3000);
-        }
-        function finalStop() { document.getElementById('delay-overlay').style.display = 'none'; resetUI(); updateDayStatus('OFF'); }
-
-        window.onload = checkIntegrity;
+        window.onload = updateDisplay;
     </script>
 </body>
 </html>
