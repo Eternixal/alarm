@@ -74,8 +74,6 @@
 
     <div id="lofi-player" style="position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none;"></div>
     
-    <audio id="luar-biasa-sfx" src="luar-biasa.mp3"></audio>
-    
     <div id="soon-toast">SEGERA HADIR ✨</div>
 
     <nav class="nav-bar">
@@ -151,6 +149,7 @@
             'flow': '8xGUbBNtPKg', 'clarity': 'oPVte6aMprI', 
             'deepwork': 'XIJLUxyXJPk', 'void': '_bLX5WfDQfM' 
         };
+        const REWARD_VIDEO_ID = 'CXi415UM4cM'; // ID dari YouTube Shorts kamu
         let currentVibe = vibes['flow'];
 
         const quotes = [ "Kamu berhasil menaklukkan fokus hari ini.", "Satu langkah lebih dekat menuju tujuan besar.", "Kualitas kerja yang luar biasa, Nerdix!" ];
@@ -192,7 +191,13 @@
             document.getElementById('running-controls').style.display = 'block';
             document.getElementById('day-status').innerText = "FOKUS";
             document.querySelectorAll('.step-btn').forEach(btn => btn.classList.add('hide'));
-            if(player) { player.setVolume(100); player.playVideo(); }
+            
+            if(player) { 
+                player.loadVideoById(currentVibe); // Pastikan load vibe yang dipilih
+                player.setVolume(100); 
+                player.playVideo(); 
+            }
+            
             timer = setInterval(() => {
                 if(totalSec > 0) {
                     totalSec--; h = Math.floor(totalSec / 3600); m = Math.floor((totalSec % 3600) / 60); s = totalSec % 60; updateDisplay();
@@ -204,28 +209,22 @@
 
         function finishSession() { 
             clearInterval(timer); 
-
-            // Putar lagu Luar Biasa saat trophy muncul
-            const congratsSfx = document.getElementById('luar-biasa-sfx');
-            if(congratsSfx) {
-                congratsSfx.currentTime = 0;
-                congratsSfx.play().catch(e => console.log("Audio block by browser"));
+            
+            // 1. Ganti video ke YouTube Shorts Luar Biasa & Putar
+            if(player) {
+                player.loadVideoById(REWARD_VIDEO_ID);
+                player.setVolume(100);
+                player.playVideo();
             }
 
-            fadeOutAudio(() => { 
-                isRunning = false; 
-                document.getElementById('quote-display').innerText = quotes[Math.floor(Math.random() * quotes.length)]; 
-                document.getElementById('finish-notice').style.display = 'flex'; 
-            }); 
+            // 2. Tampilkan Trophy
+            isRunning = false; 
+            document.getElementById('quote-display').innerText = quotes[Math.floor(Math.random() * quotes.length)]; 
+            document.getElementById('finish-notice').style.display = 'flex'; 
         }
 
         function closeFinishNotice() { 
-            // Matikan lagu Luar Biasa saat Restart diklik
-            const congratsSfx = document.getElementById('luar-biasa-sfx');
-            if(congratsSfx) {
-                congratsSfx.pause();
-                congratsSfx.currentTime = 0;
-            }
+            if(player) { player.pauseVideo(); }
             document.getElementById('finish-notice').style.display = 'none'; 
             resetUI(); 
         }
@@ -256,7 +255,14 @@
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('lofi-player', {
                 height: '0', width: '0', videoId: currentVibe,
-                playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': currentVibe, 'origin': window.location.origin }
+                playerVars: { 
+                    'autoplay': 0, 
+                    'controls': 0, 
+                    'loop': 1, 
+                    'playlist': currentVibe, 
+                    'origin': window.location.origin,
+                    'enablejsapi': 1 
+                }
             });
         }
         window.onload = updateDisplay;
