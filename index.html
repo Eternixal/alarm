@@ -73,7 +73,8 @@
 <body>
 
     <div id="lofi-player" style="position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none;"></div>
-    <audio id="congrats-sfx" src="Luar Biasa.mp3"></audio>
+    
+    <audio id="luar-biasa-sfx" src="luar-biasa.mp3"></audio>
     
     <div id="soon-toast">SEGERA HADIR ✨</div>
 
@@ -203,8 +204,13 @@
 
         function finishSession() { 
             clearInterval(timer); 
-            const congratsSfx = document.getElementById('congrats-sfx');
-            congratsSfx.play().catch(e => console.log("Audio block by browser"));
+
+            // Putar lagu Luar Biasa saat trophy muncul
+            const congratsSfx = document.getElementById('luar-biasa-sfx');
+            if(congratsSfx) {
+                congratsSfx.currentTime = 0;
+                congratsSfx.play().catch(e => console.log("Audio block by browser"));
+            }
 
             fadeOutAudio(() => { 
                 isRunning = false; 
@@ -213,7 +219,16 @@
             }); 
         }
 
-        function closeFinishNotice() { document.getElementById('finish-notice').style.display = 'none'; resetUI(); }
+        function closeFinishNotice() { 
+            // Matikan lagu Luar Biasa saat Restart diklik
+            const congratsSfx = document.getElementById('luar-biasa-sfx');
+            if(congratsSfx) {
+                congratsSfx.pause();
+                congratsSfx.currentTime = 0;
+            }
+            document.getElementById('finish-notice').style.display = 'none'; 
+            resetUI(); 
+        }
         
         function resetUI() { 
             isRunning = false; h = 0; m = 0; s = 0; 
