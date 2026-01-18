@@ -3,72 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nerdix Pulse | Pure Focus</title>
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <title>Nerdix Pulse | Deep Focus</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0F1113;             
-            --card-bg: #1A1D21;        
-            --border: #262A30;         
-            --text-main: #F3F4F6;      
-            --text-dim: #6B7280;       
-            --accent: #FFFFFF;
+            --c10: #747880; --c09: #686c73; --c08: #5d6066;
+            --c07: #51545a; --c06: #46484d; --c05: #3a3c40;
+            --c04: #2e3033; --c03: #232426; --c02: #17181a;
+            --c01: #0c0c0d; 
+            --bg: var(--c01); --card-bg: var(--c02); --text-main: #D1D1D1; --border: var(--c03);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Ubuntu', sans-serif; -webkit-font-smoothing: antialiased; touch-action: manipulation; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Ubuntu', sans-serif; -webkit-font-smoothing: antialiased; }
         body { background: var(--bg); color: var(--text-main); height: 100vh; width: 100vw; overflow: hidden; }
 
-        /* HEADER OPTIMIZATION */
-        .brand-header { 
-            text-align: center; 
-            margin-top: -10px; /* Tarik sedikit ke atas */
-            margin-bottom: 4px; /* Kecilkan jarak bawah */
-        }
-        .brand-header h1 { 
-            font-size: 1.25rem; /* Sedikit dikecilkan agar aman */
-            font-weight: 700; 
-            letter-spacing: -0.5px; 
-            background: linear-gradient(to bottom, #FFFFFF, #6B7280); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-        }
-
-        .nav-bar { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 1000; background: var(--card-bg); padding: 4px; border-radius: 20px; border: 1px solid var(--border); display: flex; gap: 4px; }
-        .nav-btn { padding: 6px 14px; border-radius: 16px; border: none; color: var(--text-dim); background: transparent; font-size: 0.65rem; font-weight: 700; cursor: pointer; transition: 0.3s; }
-        .nav-btn.active { background: var(--accent); color: var(--bg); }
-        .nav-btn.soon { opacity: 0.4; font-style: italic; }
+        .app-shell { height: 100vh; padding: 75px 16px 20px; max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
+        .card { width: 100%; background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 25px 20px; position: relative; }
         
-        .app-shell { height: 100vh; padding: 75px 16px 20px; max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
-        .card { width: 100%; background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px; padding: 20px; position: relative; overflow: hidden; }
+        .brand-header { text-align: center; margin-bottom: 5px; }
+        .brand-header h1 { font-size: 1.1rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--text-main); }
         
-        .timer-scroller { display: flex; justify-content: center; align-items: center; gap: 8px; padding: 15px 0; user-select: none; }
-        .unit-box { position: relative; height: 95px; width: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: ns-resize; }
-        .digit { font-family: 'JetBrains Mono', monospace; font-size: 2.8rem; font-weight: 400; color: var(--text-main); z-index: 2; }
-        .ghost { position: absolute; font-family: 'JetBrains Mono', monospace; font-size: 1.2rem; color: var(--text-dim); opacity: 0.1; }
-        .separator { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; color: var(--text-dim); padding-bottom: 8px; opacity: 0.3; }
-        .unit-label { font-size: 0.5rem; color: var(--text-dim); position: absolute; bottom: -2px; font-weight: 700; letter-spacing: 1px; }
+        .nav-bar { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 1000; background: var(--c02); padding: 4px; border-radius: 12px; border: 1px solid var(--c03); display: flex; gap: 4px; }
+        .nav-btn { padding: 6px 18px; border-radius: 8px; border: none; color: var(--c08); background: transparent; font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; cursor: pointer; transition: 0.3s; }
+        .nav-btn.active { background: var(--c04); color: var(--text-main); }
 
-        .mood-selector { display: flex; justify-content: space-around; margin-top: 10px; background: var(--bg); padding: 10px; border-radius: 18px; border: 1px solid var(--border); }
-        .mood-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; opacity: 0.3; transition: 0.3s; filter: grayscale(1); }
+        #soon-toast { 
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px); 
+            background: var(--text-main); color: #000; padding: 12px 24px; border-radius: 50px; 
+            font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; z-index: 9999;
+            opacity: 0; visibility: hidden;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #soon-toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+
+        /* TIMER AREA OPTIMIZATION */
+        .timer-scroller { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 15px; /* Luasin jarak antar kolom */
+            padding: 20px 0; 
+        }
+        .unit-box { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 80px; }
+        
+        .step-btn { 
+            background: var(--c03); border: none; color: var(--c08); 
+            width: 36px; height: 28px; border-radius: 6px; cursor: pointer;
+            font-size: 0.7rem; display: flex; align-items: center; justify-content: center;
+            transition: 0.2s; opacity: 0.5;
+        }
+        .step-btn:hover { opacity: 1; color: var(--text-main); }
+        .step-btn.hide { visibility: hidden; pointer-events: none; }
+
+        .digit { 
+            font-family: 'JetBrains Mono', monospace; 
+            font-size: 2.6rem; /* Ukuran angka dikecilkan agar proporsional */
+            font-weight: 400; 
+            color: var(--text-main); 
+            letter-spacing: -1px; 
+            line-height: 1;
+        }
+        .separator { 
+            font-family: 'JetBrains Mono', monospace; 
+            font-size: 1.5rem; 
+            color: var(--c05); 
+            margin-bottom: 30px; /* Sejajarkan dengan angka */
+        }
+        .unit-label { font-size: 0.5rem; color: var(--c08); font-weight: 700; letter-spacing: 2px; margin-top: 2px; text-transform: uppercase; }
+
+        /* MOOD AREA */
+        .mood-selector { display: flex; justify-content: space-around; margin-top: 15px; background: var(--c01); padding: 12px; border-radius: 14px; border: 1px solid var(--c03); }
+        .mood-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; opacity: 0.2; filter: grayscale(1); transition: 0.4s; }
         .mood-btn.active { opacity: 1; filter: grayscale(0); transform: scale(1.1); }
-        .vibe-label { font-size: 0.6rem; color: var(--text-dim); margin-top: 6px; font-weight: 500; text-align: center; }
+        .vibe-label { font-size: 0.6rem; color: var(--text-main); margin-top: 10px; font-weight: 500; text-align: center; letter-spacing: 2px; text-transform: uppercase; }
 
-        .btn-main { width: 100%; padding: 18px; border-radius: 20px; border: none; font-size: 0.9rem; font-weight: 700; background: var(--accent); color: var(--bg); cursor: pointer; transition: 0.2s; }
-
-        #soon-toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--accent); color: var(--bg); padding: 10px 20px; border-radius: 50px; font-size: 0.7rem; font-weight: 700; z-index: 10000; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        #soon-toast.show { transform: translateX(-50%) translateY(0); }
-        #finish-notice { position: absolute; inset: 0; background: var(--card-bg); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10; padding: 20px; text-align: center; }
-        .tag-status { font-size: 0.5rem; font-weight: 700; padding: 4px 10px; border-radius: 8px; background: var(--bg); border: 1px solid var(--border); color: var(--text-dim); }
+        .btn-main { width: 100%; padding: 18px; border-radius: 16px; border: none; font-size: 0.9rem; font-weight: 700; background: var(--c10); color: #000000; cursor: pointer; letter-spacing: 2px; text-transform: uppercase; margin-top: 10px; }
+        .tag-status { font-size: 0.55rem; font-weight: 700; padding: 4px 12px; border-radius: 6px; border: 1px solid var(--c04); color: var(--text-main); letter-spacing: 1.5px; }
+        #finish-notice { position: absolute; inset: 0; background: var(--c02); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10; padding: 20px; text-align: center; border-radius: 20px; }
     </style>
 </head>
 <body>
 
     <div id="lofi-player" style="position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none;"></div>
-    <div id="soon-toast">Fitur PRO sedang disiapkan ✨</div>
+    <div id="soon-toast">SEGERA HADIR ✨</div>
 
     <nav class="nav-bar">
         <button class="nav-btn active">FOKUS</button>
-        <button class="nav-btn soon" onclick="showSoon()">SOON 🔒</button>
+        <button class="nav-btn soon" onclick="showSoon()">LOG</button>
     </nav>
 
     <div class="app-shell">
@@ -76,69 +97,68 @@
 
         <div class="card">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size: 0.55rem; font-weight: 700; color: var(--text-dim); letter-spacing: 1px;">KOMITMEN HARI INI</span>
-                <span id="day-status" class="tag-status">REHAT</span>
+                <span style="font-size: 0.6rem; font-weight: 700; color: var(--c08); letter-spacing: 1.5px;">SIAP MULAI</span>
+                <span id="day-status" class="tag-status">SANTAI</span>
             </div>
-            <p id="integrity-info" style="font-size: 0.7rem; color: var(--text-dim); margin-top: 6px;">Atur durasi & vibe untuk mulai.</p>
+            <p style="font-size: 0.8rem; color: var(--text-main); margin-top: 8px; opacity: 0.8;">Atur waktu, mulai sesi.</p>
         </div>
 
         <main class="card">
             <div id="finish-notice">
-                <span style="font-size: 2rem; margin-bottom: 10px;">👏</span>
-                <b style="font-size: 1.1rem; font-weight: 700;">Respect, Selesai!</b>
-                <p id="quote-display" style="font-size: 0.75rem; color: var(--text-dim); margin: 8px 0 20px; line-height: 1.4;"></p>
-                <button class="btn-main" onclick="closeFinishNotice()" style="width: auto; padding: 10px 25px;">Mulai Lagi</button>
+                <span style="font-size: 2rem; margin-bottom: 12px;">✔️</span>
+                <b style="font-size: 1.1rem; letter-spacing: 2px;">SESI SELESAI</b>
+                <p id="quote-display" style="font-size: 0.85rem; margin: 12px 0 24px; line-height: 1.5; opacity: 0.8;"></p>
+                <button class="btn-main" onclick="closeFinishNotice()" style="width: auto; padding: 12px 30px;">RESTART</button>
             </div>
 
             <div style="text-align: center;">
-                <span style="font-size: 0.55rem; font-weight: 700; color: var(--text-dim); letter-spacing: 1px;">PILIH SUARA LATAR</span>
+                <span style="font-size: 0.55rem; font-weight: 700; color: var(--c07); letter-spacing: 2px;">ATMOSFER</span>
                 <div class="mood-selector">
-                    <button class="mood-btn active" onclick="setMood('lofi', this, 'Musik Chill Lofi')">☕</button>
-                    <button class="mood-btn" onclick="setMood('rain', this, 'Suara Hujan Tenang')">🌧️</button>
-                    <button class="mood-btn" onclick="setMood('space', this, 'Vibe Luar Angkasa')">🌌</button>
-                    <button class="mood-btn" onclick="setMood('forest', this, 'Suara Alam & Hutan')">🍃</button>
+                    <button class="mood-btn active" onclick="setMood('lofi', this, 'ALIR')">🌊</button>
+                    <button class="mood-btn" onclick="setMood('rain', this, 'JERNIH')">💎</button>
+                    <button class="mood-btn" onclick="setMood('space', this, 'HAMPA')">🌑</button>
+                    <button class="mood-btn" onclick="setMood('forest', this, 'SADAR')">🧘</button>
                 </div>
-                <p id="vibe-text" class="vibe-label">Musik Chill Lofi</p>
+                <p id="vibe-text" class="vibe-label">ALIR</p>
             </div>
 
             <div class="timer-scroller">
-                <div class="unit-box" onwheel="handleWheel(event, 'h')" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event, 'h')">
-                    <span class="ghost ghost-up" id="h-up">01</span>
+                <div class="unit-box">
+                    <button class="step-btn" onclick="changeValue('h', 1)">▲</button>
                     <span class="digit" id="h-val">00</span>
-                    <span class="ghost ghost-down" id="h-down">23</span>
+                    <button class="step-btn" onclick="changeValue('h', -1)">▼</button>
                     <span class="unit-label">JAM</span>
                 </div>
                 <span class="separator">:</span>
-                <div class="unit-box" onwheel="handleWheel(event, 'm')" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event, 'm')">
-                    <span class="ghost ghost-up" id="m-up">01</span>
+                <div class="unit-box">
+                    <button class="step-btn" onclick="changeValue('m', 1)">▲</button>
                     <span class="digit" id="m-val">00</span>
-                    <span class="ghost ghost-down" id="m-down">59</span>
+                    <button class="step-btn" onclick="changeValue('m', -1)">▼</button>
                     <span class="unit-label">MENIT</span>
                 </div>
                 <span class="separator">:</span>
-                <div class="unit-box" onwheel="handleWheel(event, 's')" ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event, 's')">
-                    <span class="ghost ghost-up" id="s-up">01</span>
+                <div class="unit-box">
+                    <button class="step-btn" onclick="changeValue('s', 1)">▲</button>
                     <span class="digit" id="s-val">00</span>
-                    <span class="ghost ghost-down" id="s-down">59</span>
+                    <button class="step-btn" onclick="changeValue('s', -1)">▼</button>
                     <span class="unit-label">DETIK</span>
                 </div>
             </div>
 
-            <button class="btn-main" id="start-btn" onclick="initStart()">MULAI SEKARANG</button>
+            <button class="btn-main" id="start-btn" onclick="initStart()">MULAI SESI</button>
             <div id="running-controls" style="display: none; margin-top: 8px;">
-                <button onclick="handleStop()" style="width:100%; background:none; border:1px solid var(--border); color:var(--text-dim); padding:15px; border-radius:18px; font-weight:700; font-size:0.75rem; cursor:pointer;">Berhenti Awal</button>
+                <button onclick="handleStop()" style="width:100%; background:none; border:1px solid var(--c04); color:var(--text-main); padding:16px; border-radius:16px; font-weight:700; font-size:0.8rem; cursor:pointer; letter-spacing: 1.5px;">HENTIKAN</button>
             </div>
         </main>
     </div>
 
     <script>
-        // Logika teknis tetap sama (dengan Fade Out)
         let h = 0, m = 0, s = 0;
-        let timer = null, player, isRunning = false, startY = 0;
-        let currentVibe = 'oPVte6aMprI';
-
-        const vibes = { 'lofi': 'oPVte6aMprI', 'rain': 'mPZkdNF6J7U', 'space': 'm86mBRKZHY0', 'forest': 'xNN7iTaiz78' };
-        const quotes = [ "Fokus itu pilihan, dan lo baru aja memilihnya.", "Bukan soal durasi, tapi soal konsistensi.", "Hp ditaruh, masa depan dijemput. Keren!", "Satu langkah lebih dekat ke impian lo.", "Tarik napas. Lo udah lakuin yang terbaik." ];
+        let timer = null, player, isRunning = false;
+        
+        let currentVibe = '5yx6BWbL1GU';
+        const vibes = { 'lofi': '5yx6BWbL1GU', 'rain': 'mPZkdNF6J7U', 'space': 'm86mBRKZHY0', 'forest': 'xNN7iTaiz78' };
+        const quotes = [ "Fokus adalah bentuk disiplin tertinggi.", "Kualitas kerja ditentukan oleh kedalaman fokus.", "Hargai waktu Anda, hargai proses Anda." ];
 
         function showSoon() {
             const toast = document.getElementById('soon-toast');
@@ -146,13 +166,18 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        function fadeOutAudio(callback) {
-            if (!player) return callback();
-            let vol = player.getVolume();
-            let fadeInterval = setInterval(() => {
-                if (vol > 0) { vol -= 5; player.setVolume(vol); } 
-                else { clearInterval(fadeInterval); player.pauseVideo(); player.setVolume(100); callback(); }
-            }, 100);
+        function changeValue(unit, delta) {
+            if(isRunning) return;
+            if(unit === 'h') h = (h + delta + 24) % 24;
+            if(unit === 'm') m = (m + delta + 60) % 60;
+            if(unit === 's') s = (s + delta + 60) % 60;
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            document.getElementById('h-val').innerText = h.toString().padStart(2, '0');
+            document.getElementById('m-val').innerText = m.toString().padStart(2, '0');
+            document.getElementById('s-val').innerText = s.toString().padStart(2, '0');
         }
 
         function setMood(type, btn, label) {
@@ -164,40 +189,14 @@
             if(player) { player.loadVideoById(currentVibe); player.pauseVideo(); }
         }
 
-        function handleWheel(e, unit) { if(!isRunning) changeValue(unit, e.deltaY < 0 ? 1 : -1); }
-        function handleTouchStart(e) { if(!isRunning) startY = e.touches[0].clientY; }
-        function handleTouchMove(e, unit) {
-            if(isRunning) return;
-            const currentY = e.touches[0].clientY;
-            const diff = startY - currentY;
-            if (Math.abs(diff) > 25) { changeValue(unit, diff > 0 ? 1 : -1); startY = currentY; }
-        }
-        function changeValue(unit, delta) {
-            if(unit === 'h') h = (h + delta + 24) % 24;
-            if(unit === 'm') m = (m + delta + 60) % 60;
-            if(unit === 's') s = (s + delta + 60) % 60;
-            updateDisplay();
-        }
-        function updateDisplay() {
-            document.getElementById('h-val').innerText = h.toString().padStart(2, '0');
-            document.getElementById('m-val').innerText = m.toString().padStart(2, '0');
-            document.getElementById('s-val').innerText = s.toString().padStart(2, '0');
-            document.getElementById('h-up').innerText = ((h + 1) % 24).toString().padStart(2, '0');
-            document.getElementById('h-down').innerText = ((h - 1 + 24) % 24).toString().padStart(2, '0');
-            document.getElementById('m-up').innerText = ((m + 1) % 60).toString().padStart(2, '0');
-            document.getElementById('m-down').innerText = ((m - 1 + 60) % 60).toString().padStart(2, '0');
-            document.getElementById('s-up').innerText = ((s + 1) % 60).toString().padStart(2, '0');
-            document.getElementById('s-down').innerText = ((s - 1 + 60) % 60).toString().padStart(2, '0');
-        }
-
         function initStart() {
             let totalSec = (h * 3600) + (m * 60) + s;
             if(totalSec <= 0) return;
             isRunning = true;
             document.getElementById('start-btn').style.display = 'none';
             document.getElementById('running-controls').style.display = 'block';
-            document.querySelectorAll('.ghost').forEach(g => g.style.display = 'none');
             document.getElementById('day-status').innerText = "FOKUS";
+            document.querySelectorAll('.step-btn').forEach(btn => btn.classList.add('hide'));
             if(player) { player.setVolume(100); player.playVideo(); }
             timer = setInterval(() => {
                 if(totalSec > 0) {
@@ -206,10 +205,19 @@
             }, 1000);
         }
 
-        function handleStop() { clearInterval(timer); fadeOutAudio(() => { resetUI(); }); }
+        function handleStop() { clearInterval(timer); fadeOutAudio(() => resetUI()); }
         function finishSession() { clearInterval(timer); fadeOutAudio(() => { isRunning = false; document.getElementById('quote-display').innerText = quotes[Math.floor(Math.random() * quotes.length)]; document.getElementById('finish-notice').style.display = 'flex'; }); }
         function closeFinishNotice() { document.getElementById('finish-notice').style.display = 'none'; resetUI(); }
-        function resetUI() { isRunning = false; h = 0; m = 0; s = 0; document.getElementById('start-btn').style.display = 'block'; document.getElementById('running-controls').style.display = 'none'; document.querySelectorAll('.ghost').forEach(g => g.style.display = 'block'); updateDisplay(); document.getElementById('day-status').innerText = "REHAT"; }
+        function resetUI() { isRunning = false; h = 0; m = 0; s = 0; document.getElementById('start-btn').style.display = 'block'; document.getElementById('running-controls').style.display = 'none'; document.getElementById('day-status').innerText = "SANTAI"; document.querySelectorAll('.step-btn').forEach(btn => btn.classList.remove('hide')); updateDisplay(); }
+
+        function fadeOutAudio(callback) {
+            if (!player) return callback();
+            let vol = player.getVolume();
+            let fadeInterval = setInterval(() => {
+                if (vol > 0) { vol -= 5; player.setVolume(vol); } 
+                else { clearInterval(fadeInterval); player.pauseVideo(); player.setVolume(100); callback(); }
+            }, 100);
+        }
 
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
