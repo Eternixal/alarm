@@ -109,7 +109,6 @@
         #soon-toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px); background: #fff; color: #000; padding: 12px 24px; border-radius: 50px; font-size: 0.7rem; font-weight: 700; z-index: 9999; opacity: 0; visibility: hidden; transition: 0.5s; }
         #soon-toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
 
-        /* Style untuk Reward MP3 */
         .reward-trigger {
             cursor: pointer;
             padding: 10px;
@@ -150,7 +149,7 @@
                 <p id="quote-display" style="font-size: 0.85rem; margin: 12px 0 24px; line-height: 1.5; opacity: 0.8;"></p>
                 <button class="btn-main" onclick="closeFinishNotice()" style="width: auto; padding: 12px 30px;">KERJAKAN LAGI</button>
                 
-                <audio id="reward-audio" src="luar-biasa.mp3"></audio>
+                <audio id="reward-audio" src="audio/amazing.mp3"></audio>
             </div>
 
             <div style="text-align: center;">
@@ -260,14 +259,16 @@
             taskInput.classList.add('completed');
             document.getElementById('day-status').innerText = "SELESAI";
             
-            document.getElementById('quote-display').innerText = `Misi "${taskInput.value || 'Fokus'}" selesai! Tekan tombol di atas untuk mendengar audio apresiasi.`; 
+            document.getElementById('quote-display').innerText = `Misi "${taskInput.value || 'Fokus'}" selesai! Kamu luar biasa.`; 
             document.getElementById('finish-notice').style.display = 'flex'; 
         }
 
-        // FUNGSI BARU UNTUK AUDIO MP3
         function playRewardAudio() {
             const audio = document.getElementById('reward-audio');
-            audio.play().catch(e => console.log("Gagal putar audio. Pastikan file luar-biasa.mp3 ada."));
+            audio.play().catch(e => {
+                console.error("Gagal memutar audio:", e);
+                alert("Pastikan file 'amazing.mp3' ada di dalam folder 'public/audio/'");
+            });
         }
 
         function handleStop() { clearInterval(timer); resetUI(); if(player) player.pauseVideo(); }
