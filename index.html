@@ -53,7 +53,6 @@
         .task-input:focus { border-bottom-color: var(--accent); transform: translateY(-2px); }
         .task-input.completed { text-decoration: line-through; opacity: 0.5; border-bottom: none; }
 
-        /* MOOD ACCENTS */
         .mood-flow .card-main { --card-bg: #171A21; --border: #2EE7B7; --accent: #2EE7B7; box-shadow: 0 10px 30px -10px rgba(46, 231, 183, 0.1); }
         .mood-clarity .card-main { --card-bg: #171C26; --border: #93C5FD; --accent: #93C5FD; box-shadow: 0 10px 30px -10px rgba(147, 197, 253, 0.1); }
         .mood-deepwork .card-main { --card-bg: #1B1A17; --border: #FBBF24; --accent: #FBBF24; box-shadow: 0 10px 30px -10px rgba(251, 191, 36, 0.1); }
@@ -78,14 +77,16 @@
         }
         .step-btn:hover { opacity: 1; }
         .step-btn.hide { visibility: hidden; pointer-events: none; }
+        .material-symbols-outlined { font-size: 1.4rem; }
+        .down-icon { transform: rotate(180deg); }
 
-        .digit { font-family: 'JetBrains Mono', monospace; font-size: 2.6rem; font-weight: 400; color: var(--text-main); line-height: 1; }
+        .digit { font-family: 'JetBrains Mono', monospace; font-size: 2.6rem; font-weight: 400; color: var(--text-main); line-height: 1; transition: 0.3s; }
         .separator { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; color: var(--border); margin-bottom: 30px; }
         .unit-label { font-size: 0.5rem; color: var(--text-muted); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
 
         .mood-selector { display: flex; justify-content: space-around; margin-top: 15px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 14px; border: 1px solid var(--border); }
-        .mood-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; opacity: 0.2; filter: grayscale(1); transition: 0.4s; }
-        .mood-btn.active { opacity: 1; filter: grayscale(0); transform: scale(1.2); }
+        .mood-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; opacity: 0.2; filter: grayscale(1); transition: all 0.4s; }
+        .mood-btn.active { opacity: 1; filter: grayscale(0); transform: scale(1.25); }
         .vibe-label { font-size: 0.6rem; color: var(--accent); margin-top: 10px; font-weight: 500; text-align: center; letter-spacing: 2px; text-transform: uppercase; }
 
         .btn-main { 
@@ -105,19 +106,21 @@
         }
         @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-        .reward-link { text-decoration: none; color: inherit; display: inline-block; cursor: pointer; }
-        .reward-link b { border-bottom: 2px solid var(--accent); transition: 0.3s; }
-
         #soon-toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px); background: #fff; color: #000; padding: 12px 24px; border-radius: 50px; font-size: 0.7rem; font-weight: 700; z-index: 9999; opacity: 0; visibility: hidden; transition: 0.5s; }
         #soon-toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+
+        /* Style untuk Reward MP3 */
+        .reward-trigger {
+            cursor: pointer;
+            padding: 10px;
+            transition: transform 0.2s;
+        }
+        .reward-trigger:active { transform: scale(0.95); }
     </style>
 </head>
 <body class="mood-flow">
 
     <div id="lofi-player" style="position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none;"></div>
-    
-    <audio id="reward-audio" src="luar-biasa.mp4" preload="auto"></audio>
-    
     <div id="soon-toast">SEGERA HADIR ✨</div>
 
     <nav class="nav-bar">
@@ -139,11 +142,15 @@
         <main class="card card-main">
             <div id="finish-notice">
                 <span style="font-size: 2.5rem; margin-bottom: 12px;">🏆</span>
-                <a href="https://youtube.com/shorts/CXi415UM4cM?feature=share" target="_blank" class="reward-link">
-                    <b style="font-size: 1.1rem; letter-spacing: 2px;">LUAR BIASA!</b>
-                </a>
+                <div class="reward-trigger" onclick="playRewardAudio()">
+                    <b style="font-size: 1.1rem; letter-spacing: 2px; border-bottom: 2px solid var(--accent); color: var(--accent);">
+                        DENGARKAN HADIAHMU ✨
+                    </b>
+                </div>
                 <p id="quote-display" style="font-size: 0.85rem; margin: 12px 0 24px; line-height: 1.5; opacity: 0.8;"></p>
                 <button class="btn-main" onclick="closeFinishNotice()" style="width: auto; padding: 12px 30px;">KERJAKAN LAGI</button>
+                
+                <audio id="reward-audio" src="luar-biasa.mp3"></audio>
             </div>
 
             <div style="text-align: center;">
@@ -237,14 +244,7 @@
             document.getElementById('day-status').innerText = "FOKUS";
             document.getElementById('main-task').disabled = true;
             document.querySelectorAll('.step-btn').forEach(btn => btn.classList.add('hide'));
-            
-            if(player) { 
-                player.unMute(); 
-                player.setVolume(80);
-                player.loadVideoById(currentVibe); 
-                player.playVideo(); 
-            }
-            
+            if(player) { player.loadVideoById(currentVibe); player.playVideo(); }
             timer = setInterval(() => {
                 if(totalSec > 0) {
                     totalSec--; h = Math.floor(totalSec / 3600); m = Math.floor((totalSec % 3600) / 60); s = totalSec % 60; updateDisplay();
@@ -254,27 +254,29 @@
 
         function finishSession() { 
             clearInterval(timer); isRunning = false;
-            
-            // 1. Matikan YouTube Lofi
             if(player) { player.pauseVideo(); }
-
-            // 2. Mainkan MP4 Lokal (Luar Biasa)
-            const rewardAudio = document.getElementById('reward-audio');
-            rewardAudio.currentTime = 0; // Reset ke awal
-            rewardAudio.volume = 1.0;    // Full volume
-            rewardAudio.play().catch(e => console.log("Audio MP4 butuh interaksi user:", e));
 
             const taskInput = document.getElementById('main-task');
             taskInput.classList.add('completed');
             document.getElementById('day-status').innerText = "SELESAI";
-            document.getElementById('quote-display').innerText = `Misi "${taskInput.value || 'Fokus'}" tuntas!`; 
+            
+            document.getElementById('quote-display').innerText = `Misi "${taskInput.value || 'Fokus'}" selesai! Tekan tombol di atas untuk mendengar audio apresiasi.`; 
             document.getElementById('finish-notice').style.display = 'flex'; 
         }
 
+        // FUNGSI BARU UNTUK AUDIO MP3
+        function playRewardAudio() {
+            const audio = document.getElementById('reward-audio');
+            audio.play().catch(e => console.log("Gagal putar audio. Pastikan file luar-biasa.mp3 ada."));
+        }
+
         function handleStop() { clearInterval(timer); resetUI(); if(player) player.pauseVideo(); }
+        
         function closeFinishNotice() { 
+            const audio = document.getElementById('reward-audio');
+            audio.pause();
+            audio.currentTime = 0; 
             document.getElementById('finish-notice').style.display = 'none'; 
-            document.getElementById('reward-audio').pause(); // Hentikan mp4 jika user tutup notice
             resetUI(); 
         }
         
@@ -299,19 +301,10 @@
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('lofi-player', {
-                height: '0',
-                width: '0',
-                videoId: currentVibe,
-                playerVars: { 
-                    'autoplay': 0, 
-                    'controls': 0, 
-                    'loop': 1, 
-                    'enablejsapi': 1,
-                    'origin': window.location.origin 
-                }
+                height: '0', width: '0', videoId: currentVibe,
+                playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': currentVibe, 'enablejsapi': 1 }
             });
         }
         window.onload = updateDisplay;
