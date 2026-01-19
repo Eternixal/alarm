@@ -3,77 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nerdix Pulse | Deep Focus</title>
+    <title>Nerdix Pulse | Focus & Task</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_upward_alt" />
     
-    <script defer src="/_vercel/insights/script.js"></script>
-
     <style>
         :root {
-            --c10: #747880; --c09: #686c73; --c08: #5d6066;
-            --c07: #51545a; --c06: #46484d; --c05: #3a3c40;
-            --c04: #2e3033; --c03: #232426; --c02: #17181a;
-            --c01: #0c0c0d; 
-            --bg: var(--c01); --card-bg: var(--c02); --text-main: #D1D1D1; --border: var(--c03);
+            --bg: #121417;
+            --card-bg: #181B20;
+            --border: #242832;
+            --text-main: #D4D7DD;
+            --text-muted: #8B8F98;
+            --accent: #38BDF8; 
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Ubuntu', sans-serif; -webkit-font-smoothing: antialiased; }
-        body { background: var(--bg); color: var(--text-main); height: 100vh; width: 100vw; overflow: hidden; }
+        /* RESET & ANTI-BIRU */
+        * { 
+            margin: 0; padding: 0; box-sizing: border-box; 
+            font-family: 'Ubuntu', sans-serif; -webkit-font-smoothing: antialiased; 
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body { background: var(--bg); color: var(--text-main); height: 100vh; width: 100vw; overflow: hidden; transition: background 0.4s; }
 
         .app-shell { height: 100vh; padding: 75px 16px 20px; max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; gap: 15px; }
-        .card { width: 100%; background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 25px 20px; position: relative; }
         
-        .brand-header { text-align: center; margin-bottom: 5px; }
-        .brand-header h1 { font-size: 1.1rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--text-main); }
-        
-        .nav-bar { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 1000; background: var(--c02); padding: 4px; border-radius: 12px; border: 1px solid var(--c03); display: flex; gap: 4px; }
-        .nav-btn { padding: 6px 18px; border-radius: 8px; border: none; color: var(--c08); background: transparent; font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; cursor: pointer; transition: 0.3s; }
-        .nav-btn.active { background: var(--c04); color: var(--text-main); }
-
-        #soon-toast { 
-            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px); 
-            background: var(--text-main); color: #000; padding: 12px 24px; border-radius: 50px; 
-            font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; z-index: 9999;
-            opacity: 0; visibility: hidden;
-            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        .card { 
+            width: 100%; 
+            background: var(--card-bg); 
+            border: 1px solid var(--border); 
+            border-radius: 20px; 
+            padding: 22px 20px; 
+            position: relative; 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
         }
-        #soon-toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+
+        /* ANIMASI INPUT */
+        .task-input {
+            background: transparent;
+            border: none;
+            border-bottom: 1px dashed var(--border);
+            color: var(--text-main);
+            width: 100%;
+            padding: 8px 0;
+            font-size: 0.95rem;
+            margin-top: 10px;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .task-input:focus { border-bottom-color: var(--accent); transform: translateY(-2px); }
+        .task-input.completed { text-decoration: line-through; opacity: 0.5; border-bottom: none; }
+
+        /* MOOD ACCENTS */
+        .mood-flow .card-main { --card-bg: #171A21; --border: #2EE7B7; --accent: #2EE7B7; box-shadow: 0 10px 30px -10px rgba(46, 231, 183, 0.1); }
+        .mood-clarity .card-main { --card-bg: #171C26; --border: #93C5FD; --accent: #93C5FD; box-shadow: 0 10px 30px -10px rgba(147, 197, 253, 0.1); }
+        .mood-deepwork .card-main { --card-bg: #1B1A17; --border: #FBBF24; --accent: #FBBF24; box-shadow: 0 10px 30px -10px rgba(251, 191, 36, 0.1); }
+        .mood-void .card-main { --card-bg: #12131A; --border: #818CF8; --accent: #818CF8; box-shadow: 0 10px 30px -10px rgba(129, 140, 248, 0.1); }
+
+        .nav-bar { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 1000; background: var(--card-bg); padding: 4px; border-radius: 12px; border: 1px solid var(--border); display: flex; gap: 4px; }
+        
+        .nav-btn { 
+            padding: 6px 18px; border-radius: 8px; border: none; color: var(--text-muted); 
+            background: transparent; font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; 
+            cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .nav-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.05); }
+        .nav-btn.active { background: var(--border); color: var(--text-main); }
 
         .timer-scroller { display: flex; justify-content: center; align-items: center; gap: 15px; padding: 20px 0; }
         .unit-box { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 80px; }
-        
         .step-btn { 
-            background: var(--c03); border: none; color: var(--c08); 
-            width: 36px; height: 28px; border-radius: 6px; cursor: pointer;
-            font-size: 0.7rem; display: flex; align-items: center; justify-content: center;
-            transition: 0.2s; opacity: 0.5;
+            background: transparent; border: 1px solid transparent; color: var(--accent); 
+            width: 40px; height: 32px; border-radius: 8px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0.4;
         }
-        .step-btn:active { opacity: 1; background: var(--c05); }
+        .step-btn:hover { opacity: 1; }
+        .step-btn:active { transform: scale(0.7); opacity: 1; background: rgba(56, 189, 248, 0.1); }
         .step-btn.hide { visibility: hidden; pointer-events: none; }
+        .material-symbols-outlined { font-size: 1.4rem; }
+        .down-icon { transform: rotate(180deg); }
 
-        .digit { font-family: 'JetBrains Mono', monospace; font-size: 2.6rem; font-weight: 400; color: var(--text-main); letter-spacing: -1px; line-height: 1; }
-        .separator { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; color: var(--c05); margin-bottom: 30px; }
-        .unit-label { font-size: 0.5rem; color: var(--c08); font-weight: 700; letter-spacing: 2px; margin-top: 2px; text-transform: uppercase; }
+        .digit { font-family: 'JetBrains Mono', monospace; font-size: 2.6rem; font-weight: 400; color: var(--text-main); line-height: 1; transition: 0.3s; }
+        .separator { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; color: var(--border); margin-bottom: 30px; }
+        .unit-label { font-size: 0.5rem; color: var(--text-muted); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
 
-        .mood-selector { display: flex; justify-content: space-around; margin-top: 15px; background: var(--c01); padding: 12px; border-radius: 14px; border: 1px solid var(--c03); }
-        .mood-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; opacity: 0.2; filter: grayscale(1); transition: 0.4s; }
-        .mood-btn.active { opacity: 1; filter: grayscale(0); transform: scale(1.1); }
-        .vibe-label { font-size: 0.6rem; color: var(--text-main); margin-top: 10px; font-weight: 500; text-align: center; letter-spacing: 2px; text-transform: uppercase; }
-
-        .btn-main { width: 100%; padding: 18px; border-radius: 16px; border: none; font-size: 0.9rem; font-weight: 700; background: var(--c10); color: #000000; cursor: pointer; letter-spacing: 2px; text-transform: uppercase; margin-top: 10px; }
-        .tag-status { font-size: 0.55rem; font-weight: 700; padding: 4px 12px; border-radius: 6px; border: 1px solid var(--c04); color: var(--text-main); letter-spacing: 1.5px; }
+        .mood-selector { display: flex; justify-content: space-around; margin-top: 15px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 14px; border: 1px solid var(--border); }
         
-        #finish-notice { position: absolute; inset: 0; background: var(--c02); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10; padding: 20px; text-align: center; border-radius: 20px; }
+        .mood-btn { 
+            background: none; border: none; font-size: 1.2rem; cursor: pointer; 
+            opacity: 0.2; filter: grayscale(1); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+        .mood-btn:active { transform: scale(0.8); }
+        .mood-btn.active { opacity: 1; filter: grayscale(0); transform: scale(1.25); }
+        .vibe-label { font-size: 0.6rem; color: var(--accent); margin-top: 10px; font-weight: 500; text-align: center; letter-spacing: 2px; text-transform: uppercase; }
+
+        .btn-main { 
+            width: 100%; padding: 18px; border-radius: 16px; border: none; 
+            font-size: 0.85rem; font-weight: 700; background: var(--accent); color: #000; 
+            cursor: pointer; letter-spacing: 2px; text-transform: uppercase; margin-top: 10px; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .btn-main:active { transform: scale(0.96); opacity: 0.8; }
         
-        .confetti-text { animation: bounce 0.5s infinite alternate; }
-        @keyframes bounce { from { transform: scale(1); } to { transform: scale(1.1); } }
+        .tag-status { font-size: 0.55rem; font-weight: 700; padding: 4px 12px; border-radius: 6px; border: 1px solid var(--border); color: var(--accent); letter-spacing: 1.5px; transition: 0.3s; }
+        
+        #finish-notice { 
+            position: absolute; inset: 0; background: var(--card-bg); display: none; 
+            flex-direction: column; align-items: center; justify-content: center; 
+            z-index: 10; padding: 20px; text-align: center; border-radius: 20px;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+        #soon-toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px); background: #fff; color: #000; padding: 12px 24px; border-radius: 50px; font-size: 0.7rem; font-weight: 700; z-index: 9999; opacity: 0; visibility: hidden; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        #soon-toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+        
+        /* Gaya tambahan untuk link video */
+        .reward-link {
+            text-decoration: none;
+            color: inherit;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        .reward-link:active { transform: scale(0.95); }
     </style>
 </head>
-<body>
+<body class="mood-flow">
 
     <div id="lofi-player" style="position: absolute; width: 0; height: 0; opacity: 0; pointer-events: none;"></div>
-    
     <div id="soon-toast">SEGERA HADIR ✨</div>
 
     <nav class="nav-bar">
@@ -82,26 +141,28 @@
     </nav>
 
     <div class="app-shell">
-        <div class="brand-header"><h1>Nerdix Pulse</h1></div>
+        <div style="text-align: center; margin-bottom: 5px;"><h1 style="font-size: 1.1rem; letter-spacing: 3px; text-transform: uppercase;">Nerdix Pulse</h1></div>
 
         <div class="card">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size: 0.6rem; font-weight: 700; color: var(--c08); letter-spacing: 1.5px;">SIAP MULAI</span>
+                <span style="font-size: 0.6rem; font-weight: 700; color: var(--text-muted); letter-spacing: 1.5px;">FOCUS TASK</span>
                 <span id="day-status" class="tag-status">SANTAI</span>
             </div>
-            <p style="font-size: 0.8rem; color: var(--text-main); margin-top: 8px; opacity: 0.8;">Pilih atmosfer dan atur timer.</p>
+            <input type="text" id="main-task" class="task-input" placeholder="Apa misi fokusmu hari ini?" oninput="checkInput()">
         </div>
 
-        <main class="card">
+        <main class="card card-main">
             <div id="finish-notice">
-                <span class="confetti-text" style="font-size: 2.5rem; margin-bottom: 12px;">🏆</span>
-                <b style="font-size: 1.1rem; letter-spacing: 2px;">LUAR BIASA!</b>
+                <span style="font-size: 2.5rem; margin-bottom: 12px;">🏆</span>
+                <a href="https://youtube.com/shorts/CXi415UM4cM?feature=share" target="_blank" class="reward-link">
+                    <b style="font-size: 1.1rem; letter-spacing: 2px; border-bottom: 2px solid var(--accent);">LUAR BIASA!</b>
+                </a>
                 <p id="quote-display" style="font-size: 0.85rem; margin: 12px 0 24px; line-height: 1.5; opacity: 0.8;"></p>
-                <button class="btn-main" onclick="closeFinishNotice()" style="width: auto; padding: 12px 30px;">RESTART</button>
+                <button class="btn-main" onclick="closeFinishNotice()" style="width: auto; padding: 12px 30px;">KERJAKAN LAGI</button>
             </div>
 
             <div style="text-align: center;">
-                <span style="font-size: 0.55rem; font-weight: 700; color: var(--c07); letter-spacing: 2px;">ATMOSFER</span>
+                <span style="font-size: 0.55rem; font-weight: 700; color: var(--text-muted); letter-spacing: 2px;">ATMOSFER</span>
                 <div class="mood-selector">
                     <button class="mood-btn active" onclick="setMood('flow', this, 'FLOW')">🌊</button>
                     <button class="mood-btn" onclick="setMood('clarity', this, 'CLARITY')">💎</button>
@@ -113,30 +174,30 @@
 
             <div class="timer-scroller">
                 <div class="unit-box">
-                    <button class="step-btn" onclick="changeValue('h', 1)">▲</button>
+                    <button class="step-btn" onclick="changeValue('h', 1)"><span class="material-symbols-outlined">arrow_upward_alt</span></button>
                     <span class="digit" id="h-val">00</span>
-                    <button class="step-btn" onclick="changeValue('h', -1)">▼</button>
+                    <button class="step-btn" onclick="changeValue('h', -1)"><span class="material-symbols-outlined down-icon">arrow_upward_alt</span></button>
                     <span class="unit-label">JAM</span>
                 </div>
                 <span class="separator">:</span>
                 <div class="unit-box">
-                    <button class="step-btn" onclick="changeValue('m', 1)">▲</button>
+                    <button class="step-btn" onclick="changeValue('m', 1)"><span class="material-symbols-outlined">arrow_upward_alt</span></button>
                     <span class="digit" id="m-val">00</span>
-                    <button class="step-btn" onclick="changeValue('m', -1)">▼</button>
+                    <button class="step-btn" onclick="changeValue('m', -1)"><span class="material-symbols-outlined down-icon">arrow_upward_alt</span></button>
                     <span class="unit-label">MENIT</span>
                 </div>
                 <span class="separator">:</span>
                 <div class="unit-box">
-                    <button class="step-btn" onclick="changeValue('s', 1)">▲</button>
+                    <button class="step-btn" onclick="changeValue('s', 1)"><span class="material-symbols-outlined">arrow_upward_alt</span></button>
                     <span class="digit" id="s-val">00</span>
-                    <button class="step-btn" onclick="changeValue('s', -1)">▼</button>
+                    <button class="step-btn" onclick="changeValue('s', -1)"><span class="material-symbols-outlined down-icon">arrow_upward_alt</span></button>
                     <span class="unit-label">DETIK</span>
                 </div>
             </div>
 
-            <button class="btn-main" id="start-btn" onclick="initStart()">MULAI SESI</button>
+            <button class="btn-main" id="start-btn" onclick="initStart()">MULAI FOKUS</button>
             <div id="running-controls" style="display: none; margin-top: 8px;">
-                <button onclick="handleStop()" style="width:100%; background:none; border:1px solid var(--c04); color:var(--text-main); padding:16px; border-radius:16px; font-weight:700; font-size:0.8rem; cursor:pointer; letter-spacing: 1.5px;">HENTIKAN</button>
+                <button onclick="handleStop()" style="width:100%; background:none; border:1px solid var(--border); color:var(--text-main); padding:16px; border-radius:16px; font-weight:700; font-size:0.8rem; cursor:pointer; transition: 0.3s;">BATALKAN</button>
             </div>
         </main>
     </div>
@@ -145,19 +206,28 @@
         let h = 0, m = 0, s = 0;
         let timer = null, player, isRunning = false;
         
-        const vibes = { 
-            'flow': '8xGUbBNtPKg', 'clarity': 'oPVte6aMprI', 
-            'deepwork': 'XIJLUxyXJPk', 'void': '_bLX5WfDQfM' 
-        };
-        const REWARD_VIDEO_ID = 'CXi415UM4cM'; // ID dari YouTube Shorts kamu
+        const vibes = { 'flow': '8xGUbBNtPKg', 'clarity': 'oPVte6aMprI', 'deepwork': 'XIJLUxyXJPk', 'void': '_bLX5WfDQfM' };
+        const REWARD_VIDEO_ID = 'CXi415UM4cM'; 
         let currentVibe = vibes['flow'];
 
-        const quotes = [ "Kamu berhasil menaklukkan fokus hari ini.", "Satu langkah lebih dekat menuju tujuan besar.", "Kualitas kerja yang luar biasa, Nerdix!" ];
+        function checkInput() {
+            const input = document.getElementById('main-task');
+            const status = document.getElementById('day-status');
+            if(input.value.length > 0) {
+                status.innerText = "SIAP"; status.style.color = "var(--accent)";
+            } else {
+                status.innerText = "SANTAI"; status.style.color = "var(--text-muted)";
+            }
+        }
 
-        function showSoon() {
-            const toast = document.getElementById('soon-toast');
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 3000);
+        function setMood(type, btn, label) {
+            if (isRunning) return;
+            currentVibe = vibes[type];
+            if (player) { player.loadVideoById(currentVibe); player.pauseVideo(); }
+            document.body.className = `mood-${type}`;
+            document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('vibe-text').innerText = label;
         }
 
         function changeValue(unit, delta) {
@@ -174,15 +244,6 @@
             document.getElementById('s-val').innerText = s.toString().padStart(2, '0');
         }
 
-        function setMood(type, btn, label) {
-            if(isRunning) return;
-            currentVibe = vibes[type];
-            document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('vibe-text').innerText = label;
-            if(player) { player.loadVideoById(currentVibe); player.pauseVideo(); }
-        }
-
         function initStart() {
             let totalSec = (h * 3600) + (m * 60) + s;
             if(totalSec <= 0) return;
@@ -190,14 +251,9 @@
             document.getElementById('start-btn').style.display = 'none';
             document.getElementById('running-controls').style.display = 'block';
             document.getElementById('day-status').innerText = "FOKUS";
+            document.getElementById('main-task').disabled = true;
             document.querySelectorAll('.step-btn').forEach(btn => btn.classList.add('hide'));
-            
-            if(player) { 
-                player.loadVideoById(currentVibe); // Pastikan load vibe yang dipilih
-                player.setVolume(100); 
-                player.playVideo(); 
-            }
-            
+            if(player) { player.loadVideoById(currentVibe); player.playVideo(); }
             timer = setInterval(() => {
                 if(totalSec > 0) {
                     totalSec--; h = Math.floor(totalSec / 3600); m = Math.floor((totalSec % 3600) / 60); s = totalSec % 60; updateDisplay();
@@ -205,64 +261,44 @@
             }, 1000);
         }
 
-        function handleStop() { clearInterval(timer); fadeOutAudio(() => resetUI()); }
-
         function finishSession() { 
-            clearInterval(timer); 
-            
-            // 1. Ganti video ke YouTube Shorts Luar Biasa & Putar
-            if(player) {
-                player.loadVideoById(REWARD_VIDEO_ID);
-                player.setVolume(100);
-                player.playVideo();
-            }
-
-            // 2. Tampilkan Trophy
-            isRunning = false; 
-            document.getElementById('quote-display').innerText = quotes[Math.floor(Math.random() * quotes.length)]; 
+            clearInterval(timer); isRunning = false;
+            if(player) { player.loadVideoById(REWARD_VIDEO_ID); player.playVideo(); }
+            const taskInput = document.getElementById('main-task');
+            taskInput.classList.add('completed');
+            document.getElementById('day-status').innerText = "SELESAI";
+            document.getElementById('quote-display').innerText = `Tugas "${taskInput.value || 'Fokus'}" berhasil diselesaikan! Klik "LUAR BIASA" untuk reward-mu.`; 
             document.getElementById('finish-notice').style.display = 'flex'; 
         }
 
-        function closeFinishNotice() { 
-            if(player) { player.pauseVideo(); }
-            document.getElementById('finish-notice').style.display = 'none'; 
-            resetUI(); 
-        }
+        function handleStop() { clearInterval(timer); resetUI(); if(player) player.pauseVideo(); }
+        function closeFinishNotice() { document.getElementById('finish-notice').style.display = 'none'; resetUI(); }
         
         function resetUI() { 
             isRunning = false; h = 0; m = 0; s = 0; 
+            const taskInput = document.getElementById('main-task');
+            taskInput.disabled = false; taskInput.classList.remove('completed');
             document.getElementById('start-btn').style.display = 'block'; 
             document.getElementById('running-controls').style.display = 'none'; 
-            document.getElementById('day-status').innerText = "SANTAI"; 
+            checkInput();
             document.querySelectorAll('.step-btn').forEach(btn => btn.classList.remove('hide')); 
             updateDisplay(); 
         }
 
-        function fadeOutAudio(callback) {
-            if (!player) return callback();
-            let vol = player.getVolume();
-            let fadeInterval = setInterval(() => {
-                if (vol > 0) { vol -= 5; player.setVolume(vol); } 
-                else { clearInterval(fadeInterval); player.pauseVideo(); player.setVolume(100); callback(); }
-            }, 100);
+        function showSoon() {
+            const toast = document.getElementById('soon-toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
         var tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('lofi-player', {
                 height: '0', width: '0', videoId: currentVibe,
-                playerVars: { 
-                    'autoplay': 0, 
-                    'controls': 0, 
-                    'loop': 1, 
-                    'playlist': currentVibe, 
-                    'origin': window.location.origin,
-                    'enablejsapi': 1 
-                }
+                playerVars: { 'autoplay': 0, 'controls': 0, 'loop': 1, 'playlist': currentVibe, 'enablejsapi': 1 }
             });
         }
         window.onload = updateDisplay;
