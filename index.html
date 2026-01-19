@@ -18,7 +18,6 @@
             --accent: #38BDF8; 
         }
 
-        /* RESET & ANTI-BIRU */
         * { 
             margin: 0; padding: 0; box-sizing: border-box; 
             font-family: 'Ubuntu', sans-serif; -webkit-font-smoothing: antialiased; 
@@ -39,7 +38,6 @@
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
         }
 
-        /* ANIMASI INPUT */
         .task-input {
             background: transparent;
             border: none;
@@ -68,7 +66,6 @@
             background: transparent; font-size: 0.65rem; font-weight: 700; letter-spacing: 1.5px; 
             cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
         }
-        .nav-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.05); }
         .nav-btn.active { background: var(--border); color: var(--text-main); }
 
         .timer-scroller { display: flex; justify-content: center; align-items: center; gap: 15px; padding: 20px 0; }
@@ -80,34 +77,25 @@
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0.4;
         }
         .step-btn:hover { opacity: 1; }
-        .step-btn:active { transform: scale(0.7); opacity: 1; background: rgba(56, 189, 248, 0.1); }
         .step-btn.hide { visibility: hidden; pointer-events: none; }
-        .material-symbols-outlined { font-size: 1.4rem; }
-        .down-icon { transform: rotate(180deg); }
 
-        .digit { font-family: 'JetBrains Mono', monospace; font-size: 2.6rem; font-weight: 400; color: var(--text-main); line-height: 1; transition: 0.3s; }
+        .digit { font-family: 'JetBrains Mono', monospace; font-size: 2.6rem; font-weight: 400; color: var(--text-main); line-height: 1; }
         .separator { font-family: 'JetBrains Mono', monospace; font-size: 1.5rem; color: var(--border); margin-bottom: 30px; }
         .unit-label { font-size: 0.5rem; color: var(--text-muted); font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
 
         .mood-selector { display: flex; justify-content: space-around; margin-top: 15px; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 14px; border: 1px solid var(--border); }
-        
-        .mood-btn { 
-            background: none; border: none; font-size: 1.2rem; cursor: pointer; 
-            opacity: 0.2; filter: grayscale(1); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-        }
-        .mood-btn:active { transform: scale(0.8); }
-        .mood-btn.active { opacity: 1; filter: grayscale(0); transform: scale(1.25); }
+        .mood-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; opacity: 0.2; filter: grayscale(1); transition: 0.4s; }
+        .mood-btn.active { opacity: 1; filter: grayscale(0); transform: scale(1.2); }
         .vibe-label { font-size: 0.6rem; color: var(--accent); margin-top: 10px; font-weight: 500; text-align: center; letter-spacing: 2px; text-transform: uppercase; }
 
         .btn-main { 
             width: 100%; padding: 18px; border-radius: 16px; border: none; 
             font-size: 0.85rem; font-weight: 700; background: var(--accent); color: #000; 
             cursor: pointer; letter-spacing: 2px; text-transform: uppercase; margin-top: 10px; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            transition: 0.3s; 
         }
-        .btn-main:active { transform: scale(0.96); opacity: 0.8; }
         
-        .tag-status { font-size: 0.55rem; font-weight: 700; padding: 4px 12px; border-radius: 6px; border: 1px solid var(--border); color: var(--accent); letter-spacing: 1.5px; transition: 0.3s; }
+        .tag-status { font-size: 0.55rem; font-weight: 700; padding: 4px 12px; border-radius: 6px; border: 1px solid var(--border); color: var(--accent); letter-spacing: 1.5px; }
         
         #finish-notice { 
             position: absolute; inset: 0; background: var(--card-bg); display: none; 
@@ -117,17 +105,13 @@
         }
         @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
-        #soon-toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px); background: #fff; color: #000; padding: 12px 24px; border-radius: 50px; font-size: 0.7rem; font-weight: 700; z-index: 9999; opacity: 0; visibility: hidden; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        /* Style Link Luar Biasa */
+        .reward-link { text-decoration: none; color: inherit; display: inline-block; }
+        .reward-link b { border-bottom: 2px solid var(--accent); transition: 0.3s; }
+        .reward-link:hover b { color: var(--accent); }
+
+        #soon-toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(20px); background: #fff; color: #000; padding: 12px 24px; border-radius: 50px; font-size: 0.7rem; font-weight: 700; z-index: 9999; opacity: 0; visibility: hidden; transition: 0.5s; }
         #soon-toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
-        
-        /* Gaya tambahan untuk link video */
-        .reward-link {
-            text-decoration: none;
-            color: inherit;
-            display: inline-block;
-            transition: transform 0.2s;
-        }
-        .reward-link:active { transform: scale(0.95); }
     </style>
 </head>
 <body class="mood-flow">
@@ -155,7 +139,7 @@
             <div id="finish-notice">
                 <span style="font-size: 2.5rem; margin-bottom: 12px;">🏆</span>
                 <a href="https://youtube.com/shorts/CXi415UM4cM?feature=share" target="_blank" class="reward-link">
-                    <b style="font-size: 1.1rem; letter-spacing: 2px; border-bottom: 2px solid var(--accent);">LUAR BIASA!</b>
+                    <b style="font-size: 1.1rem; letter-spacing: 2px;">LUAR BIASA!</b>
                 </a>
                 <p id="quote-display" style="font-size: 0.85rem; margin: 12px 0 24px; line-height: 1.5; opacity: 0.8;"></p>
                 <button class="btn-main" onclick="closeFinishNotice()" style="width: auto; padding: 12px 30px;">KERJAKAN LAGI</button>
@@ -197,7 +181,7 @@
 
             <button class="btn-main" id="start-btn" onclick="initStart()">MULAI FOKUS</button>
             <div id="running-controls" style="display: none; margin-top: 8px;">
-                <button onclick="handleStop()" style="width:100%; background:none; border:1px solid var(--border); color:var(--text-main); padding:16px; border-radius:16px; font-weight:700; font-size:0.8rem; cursor:pointer; transition: 0.3s;">BATALKAN</button>
+                <button onclick="handleStop()" style="width:100%; background:none; border:1px solid var(--border); color:var(--text-main); padding:16px; border-radius:16px; font-weight:700; font-size:0.8rem; cursor:pointer;">BATALKAN</button>
             </div>
         </main>
     </div>
@@ -253,7 +237,14 @@
             document.getElementById('day-status').innerText = "FOKUS";
             document.getElementById('main-task').disabled = true;
             document.querySelectorAll('.step-btn').forEach(btn => btn.classList.add('hide'));
-            if(player) { player.loadVideoById(currentVibe); player.playVideo(); }
+            
+            if(player) { 
+                player.loadVideoById(currentVibe); 
+                player.unMute(); 
+                player.setVolume(80);
+                player.playVideo(); 
+            }
+            
             timer = setInterval(() => {
                 if(totalSec > 0) {
                     totalSec--; h = Math.floor(totalSec / 3600); m = Math.floor((totalSec % 3600) / 60); s = totalSec % 60; updateDisplay();
@@ -263,11 +254,18 @@
 
         function finishSession() { 
             clearInterval(timer); isRunning = false;
-            if(player) { player.loadVideoById(REWARD_VIDEO_ID); player.playVideo(); }
+            
+            if(player) { 
+                player.loadVideoById(REWARD_VIDEO_ID); 
+                player.unMute(); // MEMASTIKAN SUARA AKTIF
+                player.setVolume(100); // VOLUME MAKSIMAL UNTUK REWARD
+                player.playVideo(); 
+            }
+
             const taskInput = document.getElementById('main-task');
             taskInput.classList.add('completed');
             document.getElementById('day-status').innerText = "SELESAI";
-            document.getElementById('quote-display').innerText = `Tugas "${taskInput.value || 'Fokus'}" berhasil diselesaikan! Klik "LUAR BIASA" untuk reward-mu.`; 
+            document.getElementById('quote-display').innerText = `Tugas "${taskInput.value || 'Fokus'}" berhasil diselesaikan! Klik "LUAR BIASA" untuk video lengkapnya.`; 
             document.getElementById('finish-notice').style.display = 'flex'; 
         }
 
@@ -295,6 +293,7 @@
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('lofi-player', {
                 height: '0', width: '0', videoId: currentVibe,
