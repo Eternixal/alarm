@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nerdix Pulse | Smart Intent v3.2</title>
+    <title>Nerdix Sentinel | v4.0.4</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
     
@@ -15,283 +15,295 @@
             --text-main: #EEF0F2;
             --text-muted: #6C727A;
             --accent: #2EE7B7; 
-            --glass: blur(20px);
-            --gold: #FBBF24;
-            --danger: #FF4D4D;
+            --glow: rgba(46, 231, 183, 0.15);
         }
 
-        /* Mode Themes */
-        body.mood-study { --accent: #2EE7B7; --glow: rgba(46, 231, 183, 0.12); }
-        body.mood-read { --accent: #FBBF24; --glow: rgba(251, 191, 36, 0.12); }
-        body.mood-work { --accent: #38BDF8; --glow: rgba(56, 189, 248, 0.12); }
-        body.mood-create { --accent: #C084FC; --glow: rgba(192, 132, 252, 0.12); }
+        body.mood-study { --accent: #2EE7B7; --glow: rgba(46, 231, 183, 0.15); }
+        body.mood-read { --accent: #FBBF24; --glow: rgba(251, 191, 36, 0.15); }
+        body.mood-work { --accent: #38BDF8; --glow: rgba(56, 189, 248, 0.15); }
+        body.mood-create { --accent: #C084FC; --glow: rgba(192, 132, 252, 0.15); }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; justify-content: center; background-image: radial-gradient(circle at 50% 10%, var(--glow) 0%, #090b0e 100%); transition: 0.5s ease; }
+
+        /* LAYAR AWAL */
+        #welcome-screen { 
+            position: fixed; inset: 0; background: var(--bg); z-index: 5000; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #welcome-screen.hide { opacity: 0; pointer-events: none; transform: scale(1.1); }
+
+        .orbit-container {
+            position: relative;
+            width: 300px; height: 300px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 30px 0;
+        }
+
+        /* ANIMASI JAM PASIR MEMUTAR */
+        .center-axis {
+            font-size: 3.5rem;
+            z-index: 10;
+            filter: drop-shadow(0 0 20px var(--accent));
+            animation: spin-hourglass 4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+        }
+
+        @keyframes spin-hourglass {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .mode-card {
+            position: absolute;
+            width: 90px; height: 90px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(8px);
+        }
+
+        .card-1 { transform: translate(0, -115px); }
+        .card-2 { transform: translate(115px, 0); }
+        .card-3 { transform: translate(0, 115px); }
+        .card-4 { transform: translate(-115px, 0); }
+
+        .mode-card.selected { border-color: var(--accent); background: rgba(255,255,255,0.12); box-shadow: 0 0 25px var(--glow); transform: scale(1.1); }
+        .mode-card.selected.card-1 { transform: translate(0, -115px) scale(1.1); }
+        .mode-card.selected.card-2 { transform: translate(115px, 0) scale(1.1); }
+        .mode-card.selected.card-3 { transform: translate(0, 115px) scale(1.1); }
+        .mode-card.selected.card-4 { transform: translate(-115px, 0) scale(1.1); }
+
+        /* TAMPILAN UTAMA */
+        .app-shell { width: 100%; max-width: 360px; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
+        .timer-panel { width: 100%; background: var(--card-bg); border: 1px solid var(--border); border-radius: 40px; padding: 30px 10px; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(20px); }
+        .digit { font-family: 'JetBrains Mono', monospace; font-size: 2.8rem; text-shadow: 0 0 15px var(--glow); }
         
-        body { 
-            background: var(--bg); color: var(--text-main); height: 100vh; 
-            display: flex; justify-content: center; overflow: hidden; transition: 0.6s;
-            background-image: radial-gradient(circle at 50% 0%, var(--glow) 0%, #090b0e 80%);
+        .preset-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; margin-top: 25px; }
+        .btn-preset { 
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; 
+            padding: 12px 5px; color: var(--text-main); font-size: 0.65rem; font-family: 'JetBrains Mono';
+            cursor: pointer; transition: 0.2s;
         }
 
-        /* Slim Column Logic */
-        .app-shell { 
-            width: 100%; 
-            max-width: 340px; /* Diperkecil dari 400px */
-            height: 100vh; 
-            padding: 75px 15px 30px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 12px; 
-            position: relative; 
-        }
+        .btn-main { padding: 20px 45px; border-radius: 100px; border: none; background: var(--accent); color: #000; font-weight: 800; cursor: pointer; box-shadow: 0 10px 30px var(--glow); width: 100%; transition: 0.3s; }
 
-        .card { 
-            background: var(--card-bg); 
-            backdrop-filter: var(--glass); 
-            -webkit-backdrop-filter: var(--glass); 
-            border: 1px solid var(--border); 
-            border-radius: 24px; 
-            padding: 18px; 
-            transition: 0.4s; 
-            z-index: 10; 
-        }
-        
-        .intent-section { border-left: 3px solid var(--accent); }
-        .intent-section.error { 
-            border-left-color: var(--danger); 
-            background: rgba(255, 77, 77, 0.05);
-            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
-        }
-
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-            40%, 60% { transform: translate3d(4px, 0, 0); }
-        }
-
-        .task-input { 
-            background: transparent; border: none; color: var(--text-main); 
-            width: 100%; font-size: 0.85rem; font-weight: 600; padding: 6px 0; 
-            outline: none; transition: 0.3s;
-        }
-        .task-input::placeholder { color: var(--text-muted); opacity: 0.5; font-weight: 400; font-size: 0.75rem; }
-
-        .mood-container { display: flex; background: rgba(0,0,0,0.3); padding: 4px; border-radius: 16px; margin-bottom: 8px; }
-        .mood-btn { flex: 1; background: none; border: none; padding: 10px; font-size: 1.2rem; border-radius: 12px; cursor: pointer; transition: 0.3s; opacity: 0.3; filter: grayscale(1); }
-        .mood-btn.active { background: rgba(255,255,255,0.05); opacity: 1; filter: grayscale(0); transform: scale(1.1); }
-
-        .timer-container { display: flex; justify-content: center; align-items: center; margin: 15px 0; gap: 8px; }
-        .timer-col { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-        .digit { font-family: 'JetBrains Mono', monospace; font-size: 2.8rem; color: var(--text-main); letter-spacing: 2px; }
-        .unit-label { font-size: 0.5rem; font-weight: 800; color: var(--text-muted); letter-spacing: 1.5px; }
-
-        .btn-step { width: 40px; height: 26px; background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 8px; color: var(--accent); font-size: 0.8rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-step.hidden { opacity: 0; pointer-events: none; }
-
-        .btn-main { width: 100%; padding: 16px; border-radius: 20px; border: none; background: var(--accent); color: #000; font-weight: 800; letter-spacing: 1px; cursor: pointer; transition: 0.4s; box-shadow: 0 8px 18px var(--glow); }
-
-        #soon-toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #fff; color: #000; padding: 12px 24px; border-radius: 0 0 15px 15px; font-size: 0.7rem; font-weight: 800; z-index: 1000; transition: 0.6s cubic-bezier(0.19, 1, 0.22, 1); }
-        #soon-toast.show { transform: translateX(-50%) translateY(100px); }
-
-        #praise-popup { position: fixed; top: 45%; left: 50%; transform: translate(-50%, -50%) scale(0.5); opacity: 0; pointer-events: none; z-index: 2000; transition: 0.5s; }
-        #praise-popup.show { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-        .praise-box { background: var(--accent); color: #000; padding: 10px 20px; border-radius: 12px; font-weight: 800; font-size: 0.7rem; text-transform: uppercase; }
-
-        #finish-notice { position: fixed; inset: 0; background: #090B0E; display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 999; text-align: center; padding: 25px; }
-        .emoji-big { font-size: 80px; margin-bottom: 20px; filter: drop-shadow(0 0 20px var(--gold)); animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-
-        .yt-wrapper { position: absolute; top: -10px; left: -10px; width: 1px; height: 1px; opacity: 0.01; overflow: hidden; }
+        #finish-notice { position: fixed; inset: 0; background: var(--bg); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; text-align: center; }
     </style>
 </head>
 <body class="mood-work">
 
-    <div class="yt-wrapper">
-        <div id="lofi-player"></div>
-        <div id="reward-player"></div>
-    </div>
-    
-    <div id="soon-toast">SEGERA HADIR!</div>
-    <div id="praise-popup"><div class="praise-box" id="praise-text">MANTAP!</div></div>
-
-    <nav style="position: fixed; top: 15px; display: flex; background: rgba(18, 20, 24, 0.8); padding: 4px; border-radius: 100px; border: 1px solid var(--border); z-index: 100; left: 50%; transform: translateX(-50%);">
-        <button style="padding: 6px 16px; border-radius: 100px; border: none; background: var(--border); color: #fff; font-size: 0.65rem; font-weight: 800; cursor: pointer;">FOKUS</button>
-        <button onclick="showSoon()" style="padding: 6px 16px; border-radius: 100px; border: none; background: transparent; color: var(--text-muted); font-size: 0.65rem; font-weight: 800; cursor: pointer;">LOG</button>
-    </nav>
-
-    <div class="app-shell">
-        <header style="display: flex; justify-content: space-between; align-items: center; padding: 0 5px;">
-            <span style="font-size: 0.6rem; font-weight: 800; letter-spacing: 1.5px; color: var(--text-muted);">NERDIX PULSE</span>
-            <div id="day-status" style="font-size: 0.55rem; font-weight: 800; padding: 3px 10px; border-radius: 6px; background: var(--border); color: var(--text-muted);">SANTAI</div>
-        </header>
-
-        <div class="card intent-section" id="intent-container">
-            <span id="intent-label" style="font-size: 0.5rem; font-weight: 800; color: var(--accent); letter-spacing: 1px;">FOKUS KERJA</span>
-            <input type="text" id="session-intent" class="task-input" placeholder="Contoh: Selesaikan laporan mingguan..." oninput="checkIntent()">
+    <div id="welcome-screen">
+        <div style="text-align: center; margin-bottom: 10px;">
+            <h1 style="font-weight: 800; letter-spacing: -1.5px; font-size: 1.8rem;">Nerdix Sentinel</h1>
+            <p style="font-size: 0.6rem; letter-spacing: 2px; color: var(--text-muted); font-weight: 700;">PILIH MODE FOKUS</p>
+        </div>
+        
+        <div class="orbit-container">
+            <div class="center-axis">⌛</div>
+            <div class="mode-card card-1" id="card-work" onclick="selectInitialMode('work')">
+                <span style="font-size:1.6rem">💼</span>
+                <span style="font-size:0.55rem; font-weight:800; margin-top:5px">KERJA</span>
+            </div>
+            <div class="mode-card card-2" id="card-study" onclick="selectInitialMode('study')">
+                <span style="font-size:1.6rem">📖</span>
+                <span style="font-size:0.55rem; font-weight:800; margin-top:5px">BELAJAR</span>
+            </div>
+            <div class="mode-card card-3" id="card-create" onclick="selectInitialMode('create')">
+                <span style="font-size:1.6rem">🎨</span>
+                <span style="font-size:0.55rem; font-weight:800; margin-top:5px">KARYA</span>
+            </div>
+            <div class="mode-card card-4" id="card-read" onclick="selectInitialMode('read')">
+                <span style="font-size:1.6rem">📑</span>
+                <span style="font-size:0.55rem; font-weight:800; margin-top:5px">BACA</span>
+            </div>
         </div>
 
-        <main class="card" style="flex: 1; display: flex; flex-direction: column;">
-            <div class="mood-container">
-                <button class="mood-btn active" onclick="setMode('work', this)">💼</button>
-                <button class="mood-btn" onclick="setMode('study', this)">📖</button>
-                <button class="mood-btn" onclick="setMode('read', this)">📑</button>
-                <button class="mood-btn" onclick="setMode('create', this)">🎨</button>
-            </div>
-            
-            <div style="flex: 1; display: flex; align-items: center; justify-content: center;">
-                <div class="timer-container">
-                    <div class="timer-col">
-                        <button class="btn-step" onclick="changeValue('h', 1)">+</button>
-                        <div class="digit" id="h-val">00</div>
-                        <button class="btn-step" onclick="changeValue('h', -1)">-</button>
-                        <span class="unit-label">JAM</span>
-                    </div>
-                    <div style="font-size: 1rem; opacity: 0.2; margin-bottom: 30px;">:</div>
-                    <div class="timer-col">
-                        <button class="btn-step" onclick="changeValue('m', 1)">+</button>
-                        <div class="digit" id="m-val">00</div>
-                        <button class="btn-step" onclick="changeValue('m', -1)">-</button>
-                        <span class="unit-label">MENIT</span>
-                    </div>
-                </div>
-            </div>
+        <button class="btn-main" id="welcome-go" style="opacity: 0.1; pointer-events: none; width: 220px;" onclick="enterApp()">MULAI SEKARANG</button>
+    </div>
 
-            <button class="btn-main" id="start-btn" onclick="initStart()">MULAI FOKUS</button>
-            <div id="running-controls" style="display: none; text-align: center; margin-top: 10px;">
-                <button onclick="handleStop()" style="background:none; border:none; color:var(--text-muted); font-size:0.6rem; font-weight:800; cursor:pointer;">BATALKAN SESI</button>
+    <div class="app-shell">
+        <header style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+            <button onclick="exitApp()" style="background:var(--card-bg); border:1px solid var(--border); color:var(--text-muted); font-size:0.55rem; padding:8px 15px; border-radius:50px; cursor:pointer; font-weight:800;">GANTI MODE</button>
+            <div id="status-label" style="font-size:0.55rem; opacity:0.7; font-weight:800; letter-spacing:1px;">SIAP</div>
+        </header>
+
+        <div class="intent-section" style="width:100%; background:var(--card-bg); border-left:3px solid var(--accent); padding:18px; border-radius:18px; margin-bottom:25px;">
+            <div id="task-stack"></div>
+            <input type="text" id="session-intent" style="background:transparent; border:none; color:var(--text-main); width:100%; font-size:0.85rem; font-weight:600; outline:none;" placeholder="Lagi mau ngerjain apa?">
+        </div>
+
+        <div class="timer-panel">
+            <div class="unit-box" style="text-align:center">
+                <button class="adjust-btn" onclick="adj('h',1)" style="background:none; border:none; color:var(--accent); font-size:1.2rem; cursor:pointer">+</button>
+                <div class="digit" id="h-val">00</div>
+                <button class="adjust-btn" onclick="adj('h',-1)" style="background:none; border:none; color:var(--accent); font-size:1.2rem; cursor:pointer">−</button>
             </div>
-        </main>
+            <div style="font-size: 1.5rem; opacity: 0.2; margin: 15px 10px 0;">:</div>
+            <div class="unit-box" style="text-align:center">
+                <button class="adjust-btn" onclick="adj('m',1)" style="background:none; border:none; color:var(--accent); font-size:1.2rem; cursor:pointer">+</button>
+                <div class="digit" id="m-val">00</div>
+                <button class="adjust-btn" onclick="adj('m',-1)" style="background:none; border:none; color:var(--accent); font-size:1.2rem; cursor:pointer">−</button>
+            </div>
+            <div style="font-size: 1.5rem; opacity: 0.2; margin: 15px 10px 0;">:</div>
+            <div class="unit-box" style="text-align:center">
+                <button class="adjust-btn" onclick="adj('s',1)" style="background:none; border:none; color:var(--accent); font-size:1.2rem; cursor:pointer">+</button>
+                <div class="digit" id="s-val">00</div>
+                <button class="adjust-btn" onclick="adj('s',-1)" style="background:none; border:none; color:var(--accent); font-size:1.2rem; cursor:pointer">−</button>
+            </div>
+        </div>
+
+        <div class="preset-grid" id="preset-grid"></div>
+
+        <button class="btn-main" id="action-btn" onclick="handleAction()" style="margin-top:40px;">MULAI FOKUS</button>
+        <div id="cancel-zone" style="display:none; margin-top:20px;">
+            <button onclick="cancelSession()" style="background:none; border:none; color:var(--text-muted); font-size:0.65rem; cursor:pointer; text-decoration:underline;">Batalkan Waktu</button>
+        </div>
     </div>
 
     <div id="finish-notice">
-        <div class="emoji-big">🏆</div>
-        <h2 style="color: var(--gold); font-weight: 800; letter-spacing: 1px;">LUAR BIASA!</h2>
-        <p id="finish-message" style="font-size: 0.85rem; color: #9CA3AF; margin: 10px 0 35px; line-height: 1.6; max-width: 260px;"></p>
-        <button class="btn-main" style="width: auto; padding: 15px 45px; background: var(--gold); color: #451A03;" onclick="closeFinishNotice()">LANJUTKAN</button>
+        <div style="font-size: 70px;">🎉</div>
+        <h2 style="font-weight: 800; margin-top: 20px;">WAKTU HABIS!</h2>
+        <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:5px;">Kamu berhasil menyelesaikan:</p>
+        <p id="last-task-display" style="color: var(--accent); margin-bottom: 25px; font-weight: 700; font-size:1.1rem;"></p>
+        <button class="btn-main" onclick="stayInTheme()" style="width:200px">OKE, SIAP</button>
     </div>
+
+    <div style="position:absolute; top:-999px"><div id="lofi-player"></div><div id="reward-player"></div></div>
 
     <script>
         const focusModes = {
-            work: { label: "FOKUS KERJA", placeholder: "Contoh: Selesaikan laporan mingguan...", video: "lkkGlVWvkLk" },
-            study: { label: "FOKUS BELAJAR", placeholder: "Contoh: Pelajari bab 3 kalkulus...", video: "Z8ANihFXlgU" },
-            read: { label: "FOKUS BACA", placeholder: "Contoh: Baca 10 halaman buku...", video: "n4YghVcjbpw" },
-            create: { label: "FOKUS KARYA", placeholder: "Contoh: Gambar sketsa karakter...", video: "dUqdlL_k6x8" }
+            work: { video: "lkkGlVWvkLk", hints: ["Beresin email...", "Tulis laporan...", "Cek data..."], presets: ["00:05:00", "00:15:00", "00:25:00", "00:45:00", "01:00:00", "01:30:00"] },
+            study: { video: "Z8ANihFXlgU", hints: ["Baca materi...", "Latihan soal...", "Review bab..."], presets: ["00:10:00", "00:20:00", "00:30:00", "00:45:00", "01:00:00", "01:15:00"] },
+            read: { video: "n4YghVcjbpw", hints: ["Baca buku...", "Review artikel...", "Cek berita..."], presets: ["00:05:00", "00:10:00", "00:15:00", "00:20:00", "00:30:00", "00:45:00"] },
+            create: { video: "dUqdlL_k6x8", hints: ["Gambar sketsa...", "Edit video...", "Tulis ide..."], presets: ["00:30:00", "01:00:00", "01:30:00", "02:00:00", "03:00:00", "04:00:00"] }
         };
 
-        let currentMode = "work", h = 0, m = 0, timer = null, lofiPlayer, rewardPlayer, isRunning = false;
-        const praiseList = ["MENYALA! 🔥", "GAS TERUS! 🚀", "GOKIL! ⚡", "TAJAM! 🎯", "MANTAP! 🙌"];
+        let h=0, m=0, s=0, totalSec=0, isRunning=false, isPaused=false, currentMode="work", hintIdx=0, hintInterval, timerInterval;
+        let lofiPlayer, rewardPlayer;
 
-        function setMode(mode, btn) {
-            if (isRunning) return;
-            currentMode = mode;
-            document.body.className = `mood-${mode}`;
-            const input = document.getElementById('session-intent');
-            input.placeholder = focusModes[mode].placeholder;
-            document.getElementById('intent-label').innerText = focusModes[mode].label;
-            document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.getElementById('intent-container').classList.remove('error');
-            if(lofiPlayer) lofiPlayer.cueVideoById(focusModes[mode].video);
-        }
-
-        function showPraise() {
-            const popup = document.getElementById('praise-popup');
-            document.getElementById('praise-text').innerText = praiseList[Math.floor(Math.random() * praiseList.length)];
-            popup.classList.add('show');
-            setTimeout(() => popup.classList.remove('show'), 2000);
-        }
-
-        function showSoon() {
-            const toast = document.getElementById('soon-toast');
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2500);
-        }
-
-        function checkIntent() {
-            const input = document.getElementById('session-intent');
-            if(input.value.trim().length > 0) {
-                document.getElementById('intent-container').classList.remove('error');
-                document.getElementById('day-status').innerText = "SIAP";
-            } else {
-                document.getElementById('day-status').innerText = "SANTAI";
-            }
-        }
-
-        function changeValue(unit, delta) {
+        function adj(u, d) {
             if(isRunning) return;
-            if(unit === 'h') h = (h + delta + 24) % 24;
-            if(unit === 'm') m = (m + delta + 60) % 60;
+            if(u==='h') { h+=d; if(h<0) h=23; if(h>23) h=0; }
+            if(u==='m') { m+=d; if(m<0) m=59; if(m>59) m=0; }
+            if(u==='s') { s+=d; if(s<0) s=59; if(s>59) s=0; }
             updateDisplay();
         }
 
         function updateDisplay() {
             document.getElementById('h-val').innerText = h.toString().padStart(2, '0');
             document.getElementById('m-val').innerText = m.toString().padStart(2, '0');
+            document.getElementById('s-val').innerText = s.toString().padStart(2, '0');
         }
 
-        function initStart() {
-            const intentInput = document.getElementById('session-intent');
-            if (intentInput.value.trim() === "") {
-                document.getElementById('intent-container').classList.add('error');
-                intentInput.focus();
-                return;
-            }
+        function selectInitialMode(mode) {
+            currentMode = mode;
+            document.body.className = `mood-${mode}`;
+            document.querySelectorAll('.mode-card').forEach(c => c.classList.remove('selected'));
+            document.getElementById(`card-${mode}`).classList.add('selected');
+            document.getElementById('welcome-go').style.opacity = "1";
+            document.getElementById('welcome-go').style.pointerEvents = "auto";
+            
+            const grid = document.getElementById('preset-grid');
+            grid.innerHTML = "";
+            focusModes[mode].presets.forEach(p => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-preset';
+                btn.innerText = p;
+                btn.onclick = () => { if(!isRunning) { const t=p.split(':'); h=parseInt(t[0]); m=parseInt(t[1]); s=parseInt(t[2]); updateDisplay(); }};
+                grid.appendChild(btn);
+            });
 
-            let totalSec = (h * 3600) + (m * 60);
-            if(totalSec <= 0) return alert("Tentukan durasi fokus!");
+            const input = document.getElementById('session-intent');
+            if(hintInterval) clearInterval(hintInterval);
+            hintInterval = setInterval(() => {
+                if(!isRunning && !input.value) {
+                    input.placeholder = focusModes[currentMode].hints[hintIdx];
+                    hintIdx = (hintIdx + 1) % focusModes[currentMode].hints.length;
+                }
+            }, 3000);
+        }
 
-            isRunning = true;
-            document.getElementById('start-btn').style.display = 'none';
-            document.getElementById('running-controls').style.display = 'block';
-            document.getElementById('session-intent').disabled = true;
-            document.querySelectorAll('.btn-step').forEach(b => b.classList.add('hidden'));
+        function handleAction() {
+            if(!isRunning) {
+                const input = document.getElementById('session-intent');
+                if(!input.value.trim() || (h+m+s === 0)) return;
+                totalSec = (h*3600)+(m*60)+s;
+                startTimer();
+            } else { if(!isPaused) pauseTimer(); else resumeTimer(); }
+        }
 
-            if(lofiPlayer) {
-                lofiPlayer.unMute(); 
-                lofiPlayer.playVideo();
-            }
+        function startTimer() {
+            isRunning = true; isPaused = false;
+            document.getElementById('action-btn').innerText = "JEDA SEBENTAR";
+            document.getElementById('status-label').innerText = "LAGI FOKUS...";
+            document.getElementById('cancel-zone').style.display = 'block';
+            document.querySelectorAll('.adjust-btn').forEach(b => b.style.visibility = 'hidden');
+            if(lofiPlayer) { lofiPlayer.unMute(); lofiPlayer.playVideo(); }
+            runCountdown();
+        }
 
-            timer = setInterval(() => {
+        function pauseTimer() {
+            isPaused = true; clearInterval(timerInterval);
+            document.getElementById('action-btn').innerText = "LANJUTKAN LAGI";
+            document.getElementById('status-label').innerText = "BERHENTI";
+            if(lofiPlayer) lofiPlayer.pauseVideo();
+        }
+
+        function resumeTimer() {
+            isPaused = false;
+            document.getElementById('action-btn').innerText = "JEDA SEBENTAR";
+            document.getElementById('status-label').innerText = "LAGI FOKUS...";
+            if(lofiPlayer) lofiPlayer.playVideo();
+            runCountdown();
+        }
+
+        function runCountdown() {
+            timerInterval = setInterval(() => {
                 if(totalSec > 0) {
                     totalSec--;
-                    if(totalSec % 300 === 0) showPraise();
-                    let hh = Math.floor(totalSec / 3600);
-                    let mm = Math.floor((totalSec % 3600) / 60);
-                    document.getElementById('h-val').innerText = hh.toString().padStart(2, '0');
-                    document.getElementById('m-val').innerText = mm.toString().padStart(2, '0');
+                    h = Math.floor(totalSec/3600); m = Math.floor((totalSec%3600)/60); s = totalSec%60;
+                    updateDisplay();
                 } else { finishSession(); }
             }, 1000);
         }
 
-        function finishSession() { 
-            clearInterval(timer);
-            const task = document.getElementById('session-intent').value;
-            document.getElementById('finish-message').innerHTML = `Kamu baru saja menyelesaikan sesi fokus untuk: <br><b style="color:var(--gold)">"${task}"</b>`;
-            if(lofiPlayer) lofiPlayer.pauseVideo();
-            document.getElementById('finish-notice').style.display = 'flex'; 
+        function resetUI() {
+            isRunning = false; h=0; m=0; s=0; updateDisplay();
+            document.getElementById('action-btn').innerText = "MULAI FOKUS";
+            document.getElementById('status-label').innerText = "SIAP";
+            document.getElementById('cancel-zone').style.display = 'none';
+            document.querySelectorAll('.adjust-btn').forEach(b => b.style.visibility = 'visible');
+            document.getElementById('session-intent').value = "";
+            if(lofiPlayer) lofiPlayer.stopVideo();
         }
 
-        function handleStop() { clearInterval(timer); resetUI(); if(lofiPlayer) lofiPlayer.pauseVideo(); }
-        function closeFinishNotice() { document.getElementById('finish-notice').style.display = 'none'; resetUI(); }
-        
-        function resetUI() { 
-            isRunning = false; h = 0; m = 0;
-            document.getElementById('session-intent').disabled = false;
-            document.getElementById('start-btn').style.display = 'block'; 
-            document.getElementById('running-controls').style.display = 'none'; 
-            document.querySelectorAll('.btn-step').forEach(b => b.classList.remove('hidden'));
-            updateDisplay();
+        function cancelSession() { clearInterval(timerInterval); resetUI(); }
+
+        function finishSession() {
+            clearInterval(timerInterval);
+            document.getElementById('last-task-display').innerText = document.getElementById('session-intent').value;
+            const item = document.createElement('div');
+            item.style.fontSize = "0.7rem"; item.style.opacity = "0.4"; item.style.textDecoration = "line-through";
+            item.innerText = "✓ " + document.getElementById('session-intent').value;
+            document.getElementById('task-stack').appendChild(item);
+            document.getElementById('finish-notice').style.display = 'flex';
+            resetUI();
+            if(rewardPlayer) { rewardPlayer.unMute(); rewardPlayer.playVideo(); }
         }
 
-        var tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
+        function enterApp() { document.getElementById('welcome-screen').classList.add('hide'); }
+        function exitApp() { document.getElementById('welcome-screen').classList.remove('hide'); }
+        function stayInTheme() { document.getElementById('finish-notice').style.display = 'none'; if(rewardPlayer) rewardPlayer.stopVideo(); }
+
+        var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
         function onYouTubeIframeAPIReady() {
-            lofiPlayer = new YT.Player('lofi-player', { height: '1', width: '1', videoId: focusModes[currentMode].video });
+            lofiPlayer = new YT.Player('lofi-player', { height: '1', width: '1', videoId: 'lkkGlVWvkLk' });
+            rewardPlayer = new YT.Player('reward-player', { height: '1', width: '1', videoId: 'do5EbohsUUk' });
         }
     </script>
 </body>
